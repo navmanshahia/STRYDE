@@ -12,7 +12,7 @@ const PRODUCTS=[
 const COLORS={solar:{name:'SOLAR FLARE',hue:'',accent:'#ff6938',rgb:'255,105,56'},ice:{name:'ARCTIC ICE',hue:'hue-rotate(164deg) saturate(1.13)',accent:'#69caff',rgb:'105,202,255'},volt:{name:'ACID VOLT',hue:'hue-rotate(75deg) saturate(1.5)',accent:'#bfff4a',rgb:'191,255,74'},violet:{name:'AFTER DARK',hue:'hue-rotate(248deg) saturate(1.2)',accent:'#bb79fa',rgb:'187,121,250'}};
 let cart=[];try{const stored=JSON.parse(localStorage.getItem('stryde-cart-v1')||'[]');if(Array.isArray(stored))cart=stored.filter(i=>PRODUCTS.some(p=>p.id===i.id)&&Number.isInteger(i.qty)&&i.qty>0&&i.qty<100)}catch{}
 let saved=[];try{saved=JSON.parse(localStorage.getItem('stryde-faves-v1')||'[]')}catch{}
-let selectedSize=null,selectedColor='solar',selectedFinish='reflective',activeDialog=null,previousFocus=null,quickProduct=null,quickSize=null,filmTimeout=null,toastTimeout;
+let selectedSize=null,selectedColor='solar',selectedFinish='reflective',selectedUpper='ivory',selectedLaces='frost',selectedSole='carbon',activeDialog=null,previousFocus=null,quickProduct=null,quickSize=null,filmTimeout=null,toastTimeout;
 const money=n=>'$'+Number(n).toFixed(2);
 const saveCart=()=>{try{localStorage.setItem('stryde-cart-v1',JSON.stringify(cart))}catch{}};
 const saveFaves=()=>{try{localStorage.setItem('stryde-faves-v1',JSON.stringify(saved))}catch{}};
@@ -22,16 +22,16 @@ function renderProducts(){const grid=$('#product-grid');grid.innerHTML=PRODUCTS.
  $$('[data-fav]',grid).forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.fav;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];saveFaves();renderProducts();toast(saved.includes(id)?'SAVED TO YOUR FAVORITES':'REMOVED FROM FAVORITES')}));
  $$('.product-visual',grid).forEach(v=>v.addEventListener('click',()=>openProduct(v.parentElement.dataset.id)));
 }
-function addToCart(id,size,color,finish='reflective'){
+function addToCart(id,size,color,finish='reflective',materials=null){
  if(!size){toast('SELECT YOUR SIZE TO CONTINUE');return false}
- const key=`${id}|${size}|${color}|${finish}`;
+ const key=`${id}|${size}|${color}|${finish}|${materials?Object.values(materials).join('-'):''}`;
  const line=cart.find(i=>i.key===key);
- if(line)line.qty=Math.min(99,line.qty+1);else cart.push({id,size,color,finish,key,qty:1});
+ if(line)line.qty=Math.min(99,line.qty+1);else cart.push({id,size,color,finish,materials,key,qty:1});
  saveCart();renderCart();toast('ADDED TO BAG — KEEP MOVING');return true;
 }
 function renderCart(){const count=cart.reduce((n,i)=>n+i.qty,0);$('#cart-count').textContent=`(${String(count).padStart(2,'0')})`;$('#drawer-count').textContent=`(${String(count).padStart(2,'0')})`;
  const container=$('#cart-items');if(!cart.length){container.innerHTML='<div class="empty-bag"><div class="empty-symbol">⌑</div><b>NOTHING HERE. YET.</b><p>Great moves start with a first step.</p></div>'}else{
- container.innerHTML=cart.map((i,index)=>{const p=PRODUCTS.find(p=>p.id===i.id);const filter=i.id==='aerodyne'?(COLORS[i.color]?.hue||''):p.filter;return `<div class="cart-line"><img src="${IMAGE}" alt="${p.name}" style="filter:${filter}"/><div class="cart-line-info"><strong>${p.name}</strong><small>US ${i.size} / ${COLORS[i.color]?.name||p.color} / ${i.finish.toUpperCase()}</small><b>${money(p.price*i.qty)}</b><div class="qty-controls"><button data-qty="${index}" data-delta="-1" aria-label="Decrease quantity">−</button><span>${i.qty}</span><button data-qty="${index}" data-delta="1" aria-label="Increase quantity">+</button><button class="remove-line" data-remove="${index}">REMOVE</button></div></div></div>`}).join('');
+ container.innerHTML=cart.map((i,index)=>{const p=PRODUCTS.find(p=>p.id===i.id);const filter=i.id==='aerodyne'?(COLORS[i.color]?.hue||''):p.filter;return `<div class="cart-line"><img src="${IMAGE}" alt="${p.name}" style="filter:${filter}"/><div class="cart-line-info"><strong>${p.name}</strong><small>US ${i.size} / ${COLORS[i.color]?.name||p.color} / ${i.finish.toUpperCase()}${i.materials?` / ${i.materials.upper.toUpperCase()} UPPER / ${i.materials.laces.toUpperCase()} LACES / ${i.materials.sole.toUpperCase()} SOLE`:''}</small><b>${money(p.price*i.qty)}</b><div class="qty-controls"><button data-qty="${index}" data-delta="-1" aria-label="Decrease quantity">−</button><span>${i.qty}</span><button data-qty="${index}" data-delta="1" aria-label="Increase quantity">+</button><button class="remove-line" data-remove="${index}">REMOVE</button></div></div></div>`}).join('');
  $$('[data-qty]',container).forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.qty),delta=Number(b.dataset.delta);cart[i].qty+=delta;if(cart[i].qty<1)cart.splice(i,1);saveCart();renderCart()}));
  $$('[data-remove]',container).forEach(b=>b.addEventListener('click',()=>{cart.splice(Number(b.dataset.remove),1);saveCart();renderCart();toast('REMOVED FROM BAG')}));
  }
@@ -58,21 +58,28 @@ function openProduct(id){quickProduct=PRODUCTS.find(p=>p.id===id);if(!quickProdu
 // Color, size and finish lab (preview artwork is 2.5D; shader background provides independent real-time WebGL).
 function updateCustomizer(){const c=COLORS[selectedColor];$('#color-name').textContent=c.name;$('#finish-label').textContent=selectedFinish.toUpperCase();$('#size-label').textContent=selectedSize?'US '+selectedSize:'SELECT SIZE';
  $('#custom-image').style.setProperty('--custom-filter',`${c.hue} ${selectedFinish==='matte'?'saturate(.55) brightness(.87)':''}`);
+ window.StrydeGLB?.setStyle({accent:selectedColor,finish:selectedFinish,upper:selectedUpper,laces:selectedLaces,sole:selectedSole});
  $('#customizer-stage').style.setProperty('--accent-rgb',c.rgb);$$('.swatch').forEach(b=>{const active=b.dataset.color===selectedColor;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});$$('#size-grid button').forEach(b=>b.classList.toggle('active',b.dataset.size===selectedSize));$$('#finish-options button').forEach(b=>b.classList.toggle('active',b.dataset.finish===selectedFinish));
 }
 $$('#color-swatches button').forEach(b=>b.addEventListener('click',()=>{selectedColor=b.dataset.color;updateCustomizer()}));
+ for(const [selector,key] of [['#upper-swatches','upper'],['#lace-swatches','laces'],['#sole-swatches','sole']]){
+  $$(selector+' button').forEach(btn=>btn.addEventListener('click',()=>{const value=btn.dataset[key];if(key==='upper')selectedUpper=value;if(key==='laces')selectedLaces=value;if(key==='sole')selectedSole=value; $$(selector+' button').forEach(b=>{let active=b===btn;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))}); updateCustomizer()}));
+ }
 $$('#size-grid button').forEach(b=>b.addEventListener('click',()=>{selectedSize=b.dataset.size;updateCustomizer()}));
 $$('#finish-options button').forEach(b=>b.addEventListener('click',()=>{selectedFinish=b.dataset.finish;updateCustomizer()}));
-$('#custom-add').addEventListener('click',()=>{if(addToCart('aerodyne',selectedSize,selectedColor,selectedFinish))openDialog('#cart-drawer')});
+$('#custom-add').addEventListener('click',()=>{if(addToCart('aerodyne',selectedSize,selectedColor,selectedFinish,{upper:selectedUpper,laces:selectedLaces,sole:selectedSole}))openDialog('#cart-drawer')});
 $('#view-3d').addEventListener('click',()=>{openDialog('#model-overlay');$$('[data-model-color]').forEach(b=>b.classList.toggle('active',b.dataset.modelColor===selectedColor));window.Stryde3D?.start($('#model-canvas'),selectedColor)});
 $$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>{$$('[data-model-color]').forEach(x=>x.classList.toggle('active',x===b));window.Stryde3D?.setColor(b.dataset.modelColor)}));
 $('#model-reset').addEventListener('click',()=>window.Stryde3D?.reset());
-$('#reset-view').addEventListener('click',()=>{const img=$('#custom-image');img.style.transform='rotate(-10deg)';toast('VIEW RESET')});
-function stageParallax(node,target,range=10){if(reduced||!node||!target)return;let raf=null;node.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=node.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{target.style.transform=`perspective(1000px) rotateY(${x*range}deg) rotateX(${y*-range*.6}deg) translate3d(${x*9}px,${y*8}px,0)`})});node.addEventListener('pointerleave',()=>target.style.transform='')}
+$('#reset-view').addEventListener('click',()=>{window.StrydeGLB?.reset('studio');const img=$('#custom-image');img.style.transform='rotate(-10deg)';toast('VIEW RESET')});
+$('#save-design').addEventListener('click',()=>{try{localStorage.setItem('stryde-design-v2',JSON.stringify({accent:selectedColor,upper:selectedUpper,laces:selectedLaces,sole:selectedSole,finish:selectedFinish}));toast('DESIGN SAVED IN THIS BROWSER')}catch{toast('BROWSER STORAGE UNAVAILABLE')}});
+$('#share-design').addEventListener('click',async()=>{const url=new URL(location.href);for(const [k,v] of Object.entries({accent:selectedColor,upper:selectedUpper,laces:selectedLaces,sole:selectedSole,finish:selectedFinish}))url.searchParams.set(k,v);try{await navigator.clipboard.writeText(url.toString());toast('CUSTOM DESIGN LINK COPIED')}catch{window.prompt('Copy your design link:',url.toString())}});
+try{const params=new URLSearchParams(location.search);const savedDesign=Object.fromEntries(['accent','upper','laces','sole','finish'].map(k=>[k,params.get(k)]));if(!savedDesign.accent){Object.assign(savedDesign,JSON.parse(localStorage.getItem('stryde-design-v2')||'{}'))}if(savedDesign.accent&&COLORS[savedDesign.accent])selectedColor=savedDesign.accent;if(['ivory','slate','obsidian','lunar'].includes(savedDesign.upper))selectedUpper=savedDesign.upper;if(['frost','ink','flare'].includes(savedDesign.laces))selectedLaces=savedDesign.laces;if(['carbon','graphite','ice'].includes(savedDesign.sole))selectedSole=savedDesign.sole;if(['matte','reflective'].includes(savedDesign.finish))selectedFinish=savedDesign.finish;for(const [sel,key,selected] of [['#upper-swatches','upper',selectedUpper],['#lace-swatches','laces',selectedLaces],['#sole-swatches','sole',selectedSole]])$$(sel+' button').forEach(btn=>{const active=btn.dataset[key]===selected;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active))})}catch{}
+function stageParallax(node,target,range=10){if(reduced||!node||!target)return;let raf=null;node.addEventListener('pointermove',e=>{if(e.pointerType==='touch'||target.classList.contains('glb-loaded'))return;const r=node.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{target.style.transform=`perspective(1000px) rotateY(${x*range}deg) rotateX(${y*-range*.6}deg) translate3d(${x*9}px,${y*8}px,0)`})});node.addEventListener('pointerleave',()=>target.style.transform='')}
 stageParallax($('#shoe-stage'),$('.shoe-scene'),14);stageParallax($('#customizer-stage'),$('.custom-preview'),19);
 let touchStartX=0;$('#customizer-stage').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX},{passive:true});$('#customizer-stage').addEventListener('touchmove',e=>{const diff=e.touches[0].clientX-touchStartX;$('#custom-image').style.transform=`rotate(${-10+Math.max(-14,Math.min(14,diff*.08))}deg)`},{passive:true});
 // Technical layers: reversible exploded view.
-$('#explode-button').addEventListener('click',()=>{const visual=$('#tech-visual');const on=visual.classList.toggle('exploded');$('#explode-button').innerHTML=`${on?'REASSEMBLE THE SHOE':'EXPLORE THE ENGINEERING'} <span>↗</span>`});
+$('#explode-button').addEventListener('click',()=>{const visual=$('#tech-visual');const on=visual.classList.toggle('exploded');window.StrydeGLB?.setExplode(on);$('#explode-button').innerHTML=`${on?'REASSEMBLE THE SHOE':'EXPLORE THE ENGINEERING'} <span>↗</span>`});
 // Fifteen-second original motion montage; not a video file.
 $('#open-film').addEventListener('click',()=>{openDialog('#film-overlay');filmTimeout=setTimeout(()=>{if(activeDialog===$('#film-overlay'))closeDialog()},15000)});
 $('#newsletter-form').addEventListener('submit',e=>{e.preventDefault();toast('DEMO FORM VALIDATED — NO EMAIL WAS SENT');e.target.reset()});

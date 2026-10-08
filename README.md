@@ -36,3 +36,13 @@ The exhaustive list includes competing renderers and scroll engines. Stacking al
 ## Demo behavior
 
 Custom sizes and product selections work. Add to Bag and the cart operate locally. Checkout explains that payments require a backend. Newsletter validates an email address but does not collect it server-side. Product prices and performance statistics are fictional placeholders; not real goods for sale.
+
+## STRYDE Digital Atelier V2 — High detail GLB upgrade
+
+- An **original digitally modeled** AERODYNE ONE sneaker is included in `models/aerodyne-one.glb` (15 independent PBR materials / meshes; reproducible source in `tools/build_shoe.py`). This is not a photogrammetric or production scan and should not be marketed as such.
+- `glb-engine.js` loads the glTF 2.0 binary and renders the geometry in native WebGL2, so no bundler or network 3D dependencies are necessary. The original artwork stays visible as an accessible fallback when WebGL2/model delivery fails.
+- Separate live material controls: accent lighting, knit upper, shoelaces, rubber sole, and matte/reflective finishes. Change them in the Custom Lab. Save a style in localStorage or share a URL encoding the material selections.
+- Live 3D hero scene, Custom Lab viewer with orbit/zoom, engineering exploded GLB view, and dedicated full-screen 3D viewer, all synchronized to current material settings.
+- Scroll and camera choreography has a native animation fallback and enhances via GSAP ScrollTrigger when loaded. Reduced-motion preference disables automatic motion.
+- Production commerce and newsletter sending are intentionally **not** connected. This is still a portfolio frontend demonstration.
+- Host as static files with `index.html`, `models/` and source assets in the same directory. A local `python3 -m http.server 8080` is recommended over `file://` because the GLB is fetched.

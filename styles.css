@@ -17,3 +17,35 @@
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.reveal{opacity:1;transform:none}.hero-gl{display:none}}
 /* The native WebGL engineering viewer adds actual orbitable 3D mesh geometry. */
 .model-launch{position:absolute;z-index:9;bottom:13%;left:33%;padding:13px 16px;letter-spacing:.12em;font-size:10px;font-weight:800;color:#0a0d10;background:var(--accent);border:none;box-shadow:0 0 50px #ff6a3522;transition:transform .25s,background .25s}.model-launch:hover{transform:translateY(-4px);background:#fff}.model-launch span{margin-left:14px}.model-overlay{position:fixed;z-index:101;inset:0;visibility:hidden;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 45% 50%,#232b30,#0a0c10 68%);transition:opacity .45s,visibility .45s;overflow:hidden}.model-overlay[aria-hidden="false"]{visibility:visible;pointer-events:auto;opacity:1}.model-overlay:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px);background-size:70px 70px;mask-image:linear-gradient(90deg,#000,transparent);pointer-events:none}.model-close{position:absolute;top:42px;right:5%;z-index:12}.model-top{position:absolute;top:50px;left:5%;right:12%;display:flex;justify-content:space-between;color:#969da2;letter-spacing:.2em;font-size:10px;z-index:11}.model-top .orange-dot{margin-right:8px}.model-overlay canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none;z-index:3}.model-overlay canvas:active{cursor:grabbing}.model-guide{position:absolute;z-index:5;bottom:16%;left:5%;pointer-events:none;width:370px}.model-guide>span{font-size:10px;color:var(--accent);font-weight:800;letter-spacing:.15em}.model-guide h2{font-size:clamp(55px,6vw,85px);margin:22px 0}.model-guide p{color:#9da7ae;line-height:1.7;max-width:265px;font-size:12px}.model-controls{position:absolute;z-index:8;bottom:7%;right:5%;display:flex;align-items:center;gap:15px}.model-controls span{font-size:9px;font-weight:800;letter-spacing:.13em;color:#abb3b7}.model-controls button[data-model-color]{border:4px solid #131719;border-radius:50%;width:27px;height:27px;background:var(--swatch);outline:1px solid transparent;transition:transform .2s}.model-controls button[data-model-color].active{outline-color:#fff;transform:scale(1.15)}.reset-model{padding:9px 11px;background:none;border:1px solid #7e858b;font-size:9px;font-weight:800;letter-spacing:.1em}.reset-model:hover{background:#fff;color:#101317}@media(max-width:650px){.model-launch{left:50%;transform:translateX(-50%);bottom:5%;font-size:8px;white-space:nowrap}.model-launch:hover{transform:translateX(-50%) translateY(-4px)}.model-top{font-size:8px;top:28px;left:5%;right:20%;gap:12px}.model-close{right:4%;top:21px;width:36px;height:36px}.model-guide{bottom:20%;left:5%;width:90%}.model-guide h2{font-size:56px;margin:12px 0}.model-guide p{max-width:270px}.model-controls{left:5%;right:5%;bottom:8%;gap:10px}.model-controls span{font-size:8px}.reset-model{margin-left:auto}.model-controls button[data-model-color]{width:23px;height:23px}}
+
+/* STRYDE / DIGITAL ATELIER V2 — layered live 3D, preserving graceful image fallback */
+.shoe-scene,.custom-preview{position:relative;isolation:isolate}
+.shoe-scene .live-shoe,.custom-preview .studio-live{position:absolute;inset:0;width:100%;height:100%;z-index:4;opacity:0;transition:opacity .7s ease;cursor:grab;touch-action:pan-y;outline-offset:-6px}
+.shoe-scene.glb-loaded .live-shoe,.custom-preview.glb-loaded .studio-live{opacity:1}
+.shoe-scene.glb-loaded .hero-shoe,.custom-preview.glb-loaded #custom-image{opacity:0;pointer-events:none}
+.shoe-scene .live-shoe:active,.custom-preview .studio-live:active{cursor:grabbing;touch-action:none}
+.shoe-scene .live-shoe:focus-visible,.custom-preview .studio-live:focus-visible,.tech-live:focus-visible{outline:2px solid #ff6938}
+#shoe-stage{z-index:2}
+.shoe-scene .live-shoe{left:-9%;top:-12%;width:118%;height:120%}
+.tech-visual{isolation:isolate}
+.tech-live{position:absolute;inset:3% 1%;width:98%;height:92%;opacity:0;z-index:4;pointer-events:auto;touch-action:pan-y;transition:opacity .7s;cursor:grab}
+.tech-visual.glb-loaded .tech-live{opacity:1}
+.tech-visual.glb-loaded .exploded-parts{opacity:0;pointer-events:none}
+.tech-call{pointer-events:none;z-index:6}
+.model-overlay.glb-loaded #model-canvas{z-index:3}
+.custom-preview .studio-live{inset:-12%;width:124%;height:124%;touch-action:pan-y}
+.customizer-stage .floor-grid,.customizer-stage .custom-shadow{pointer-events:none}
+.material-custom-grid{display:grid;grid-template-columns:1fr;gap:9px;margin:18px 0 8px}
+.material-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff18}
+.material-row>span{font-size:9px;font-weight:800;letter-spacing:.15em;color:#acb4bb}
+.material-swatches{display:flex;gap:9px;align-items:center}
+.material-swatches button{width:23px;height:23px;border-radius:50%;background:var(--chip);border:3px solid #1b2025;outline:1px solid #60666b;transition:transform .2s ease,outline .2s ease}
+.material-swatches button.active{outline:2px solid #fff;transform:scale(1.17)}
+.material-swatches button:hover{transform:scale(1.14)}
+.live-model-note{font-size:9px!important;letter-spacing:.11em!important;color:#89949d!important;margin:12px 0 3px!important}
+.status-light{display:inline-block;width:7px;height:7px;background:#8dff9b;border-radius:50%;box-shadow:0 0 12px #8dff9b;vertical-align:middle;margin-right:5px}
+.design-actions{display:flex;gap:10px;margin:20px 0 14px}
+.design-actions button{flex:1;border:1px solid #51595e;background:rgba(255,255,255,.03);padding:14px 8px;color:#ebeff2;letter-spacing:.13em;font-size:9px;font-weight:800;transition:background .2s}
+.design-actions button:hover{background:#fff;color:#111}
+@media(max-width:650px){.shoe-scene .live-shoe{left:-2%;top:5%;width:104%;height:90%}.custom-preview .studio-live{inset:-7%;width:114%;height:114%}.material-row>span{font-size:8px}.tech-live{inset:1%;width:98%;height:98%}}
+@media(prefers-reduced-motion:reduce){.shoe-scene .live-shoe,.custom-preview .studio-live,.tech-live{transition:none}}
