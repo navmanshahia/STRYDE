@@ -18,6 +18,7 @@ Open http://localhost:8080 (or open `index.html` directly). Copy **all** files i
 - Animated layered hero with WebGL shader, particles, orbital effects and cursor-driven 2.5D shoe parallax (3D transform). Mobile touch support.
 - Four colorway collections, interactive product quick-view, size picking, customizer (finish/colorway/size), and bag with quantity edits.
 - Search, mobile menu, newsletter concept form, cinematic motion experience overlay, scroll entrance animation, editorial sections, animated statistics, smooth section navigation.
+- Native WebGL2 procedural sneaker engineering scan with true 3D geometry, drag-to-orbit, zoom, and configurable energy accents (works without CDN dependencies).
 - Shopping bag persists in browser localStorage. No orders or contact data are sent anywhere.
 - Keyboard navigation, focus management for dialogs, reduced-motion support, WebGL graceful degradation and responsive layouts.
 
@@ -30,7 +31,7 @@ Open http://localhost:8080 (or open `index.html` directly). Copy **all** files i
 
 ## Why not install all 44 libraries?
 
-The exhaustive list includes competing renderers and scroll engines. Stacking all of them adds visual conflict, high bandwidth use and runtime issues. This build selects complementary effects; a next phase could add a real high-poly GLB sneaker viewer with Three.js / React Three Fiber after a matching sneaker mesh is sourced or modelled.
+The exhaustive list includes competing renderers and scroll engines. Stacking all of them adds visual conflict, high bandwidth use and runtime issues. This build selects complementary effects; a next phase could add a production-grade high-poly GLB matching the bespoke sneaker imagery, and upgrade the chassis view to a real material-accurate Three.js / React Three Fiber configurator.
 
 ## Demo behavior
 
