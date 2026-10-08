@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#080a0c"/>
+  <meta name="description" content="STRYDE — motion without limits. Explore the Aerodyne One and customize next-generation performance footwear."/>
+  <meta property="og:title" content="STRYDE — Move Beyond"/>
+  <meta property="og:description" content="A cinematic experimental sneaker experience."/>
+  <title>STRYDE® — MOVE BEYOND</title>
+  <link rel="icon" href="assets/stryde-mark.svg" type="image/svg+xml"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js" defer></script>
+  <script src="3d-viewer.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div id="page-progress" aria-hidden="true"></div>
+  <div class="announcement"><span class="pulse"></span> THE FUTURE OF MOTION IS HERE <span class="ann-sep">/</span> COMPLIMENTARY SHIPPING OVER $150 <span class="ann-link">STRYDE / 001</span></div>
+  <header class="site-header" id="header">
+    <a href="#home" class="logo" aria-label="STRYDE home">STRYDE<span class="logo-notch">®</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#collection">THE COLLECTION</a><a href="#technology">THE TECHNOLOGY</a><a href="#customize">CUSTOMIZE</a><a href="#story">OUR WORLD</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button" id="open-search" aria-label="Search products" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.6"/><path d="m16 16 5 5"/></svg></button>
+      <button class="cart-button" id="open-cart" aria-label="Open shopping bag"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1.5 13h-13L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span>BAG <span id="cart-count">(00)</span></span></button>
+      <button class="icon-button menu-btn" id="open-menu" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <canvas id="hero-gl" aria-hidden="true"></canvas>
+      <div class="hero-noise"></div>
+      <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-beam"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> THE FUTURE HAS LANDED <span class="small-index">/ 001</span></div>
+        <h1 id="hero-title">MOVE<br/><em>BEYOND<span class="period">.</span></em></h1>
+        <p class="hero-sub">Not made to follow. Engineered to redefine what moves us forward.</p>
+        <div class="hero-cta"><a class="btn btn-light magnetic" href="#collection">EXPLORE THE DROP <span class="btn-arrow">↗</span></a><button class="text-cta" id="open-film"><span class="play-ring">▶</span> EXPERIENCE THE FILM <span class="watch-duration">00:15</span></button></div>
+      </div>
+      <div class="shoe-stage" id="shoe-stage" aria-label="Floating STRYDE Aerodyne One sneaker visual">
+        <span class="shoe-aura"></span>
+        <div class="shoe-scene"><img class="hero-shoe" src="images/aerodyne-one.png" alt="Aerodyne One white futuristic performance sneaker with luminous orange sole" draggable="false"/></div>
+        <span class="hotspot hotspot-a" aria-hidden="true">+</span><span class="hotspot hotspot-b" aria-hidden="true">+</span>
+        <span class="stage-cross cross-one">+</span><span class="stage-cross cross-two">+</span>
+      </div>
+      <div class="hero-spec"><div class="spec-line"></div><span>INTRODUCING</span><strong>AERODYNE ONE</strong><p>ENGINEERED FOR THE IMPOSSIBLE.</p><div class="hero-spec-footer"><span>01 / 04</span><span class="spec-led">●</span></div></div>
+      <div class="hero-bottom"><div class="hero-bottom-left"><span class="little-ticks"><i></i><i></i><i></i><i></i></span> DESIGNED TO DISRUPT</div><div class="hero-bottom-mid"><span class="orange-dot"></span> A NEW ERA OF MOVEMENT</div><a href="#collection" class="scroll-cue">SCROLL TO DISCOVER <span>↓</span></a></div>
+      <div class="hero-serial" aria-hidden="true">[ STRYDE / SS-026 / UNIT 001 ]</div>
+    </section>
+
+    <div class="ticker-band" aria-hidden="true"><div class="ticker-track"><span>NEVER STATIC</span><b>✳</b><span>ALWAYS IN MOTION</span><b>✳</b><span>ENGINEERED TO GO BEYOND</span><b>✳</b><span>NEVER STATIC</span><b>✳</b><span>ALWAYS IN MOTION</span><b>✳</b><span>ENGINEERED TO GO BEYOND</span><b>✳</b></div></div>
+
+    <section class="collection section-pad" id="collection" aria-labelledby="collection-title">
+      <div class="section-header"><div><div class="kicker"><span class="orange-bar"></span> THE LINEUP / 2026</div><h2 id="collection-title">THE NEW<br/><em>STANDARD.</em></h2></div><div class="section-side"><p>Four expressions of the same obsession. Every pair engineered to take you somewhere new.</p><a href="#customize" class="under-link">BUILD YOUR OWN <span>↗</span></a></div></div>
+      <div class="product-grid" id="product-grid"></div>
+      <div class="collection-footer"><div class="small-square">✳</div><span>MAKE YOUR NEXT MOVE COUNT.</span><a href="#customize" class="under-link">EXPLORE THE CUSTOMIZER ↗</a></div>
+    </section>
+
+    <section class="tech" id="technology" aria-labelledby="tech-title">
+      <div class="tech-top"><div class="kicker">TECHNOLOGY / UNDER THE SURFACE</div><div class="tech-num">02 — FORM FOLLOWS FLIGHT</div></div>
+      <div class="tech-grid">
+        <div class="tech-copy reveal"><h2 id="tech-title">BUILT<br/>DIFFERENT<span class="period">.</span></h2><p>Every millimeter has a purpose. Discover the systems working beneath the surface of your next stride.</p><button class="btn btn-outline" id="explode-button">EXPLORE THE ENGINEERING <span>↗</span></button><div class="tech-meta"><span>ENGINEERED FOR<br/>UNLIMITED MOVEMENT</span><span>STRYDE LABS<br/>EST. 2026</span></div></div>
+        <div class="tech-visual reveal" id="tech-visual"><div class="tech-halo"></div><div class="exploded-parts"><div class="layer layer-upper"><img src="images/aerodyne-one.png" alt="Sneaker upper technical layer"/></div><div class="layer layer-mid"><img src="images/aerodyne-one.png" alt="Midsole technical layer"/></div><div class="layer layer-sole"><img src="images/aerodyne-one.png" alt="Outsole technical layer"/></div></div><div class="tech-call tech-call-one"><span class="call-ring">01</span> ADAPTIVE MESH UPPER</div><div class="tech-call tech-call-two"><span class="call-ring">02</span> REACTFOAM™ CORE</div><div class="tech-call tech-call-three"><span class="call-ring">03</span> GRIPTECH™ OUTSOLE</div><div class="tech-scan"></div><button class="model-launch" id="view-3d" type="button">◈ INTERACTIVE 3D FIELD SCAN <span>↗</span></button><div class="tech-coordinate">SYS // AERO–001<br/>SCANNING...</div></div>
+      </div>
+      <div class="stats"><div><strong data-counter="38">0</strong><span>% LIGHTER FEEL*</span></div><div><strong data-counter="2">0</strong><span>ENGINEERED FOAM LAYERS</span></div><div><strong>360°</strong><span>BUILT FOR MOVEMENT</span></div><div><strong>ZERO</strong><span>COMPROMISES IN DESIGN</span></div></div>
+      <p class="stat-note">*Illustrative concept metrics for this portfolio demonstration, not certified product performance claims.</p>
+    </section>
+
+    <section class="customizer section-pad" id="customize" aria-labelledby="customize-title"><div class="customizer-heading"><div><div class="kicker"><span class="orange-bar"></span> THE CUSTOM LAB / YOUR RULES</div><h2 id="customize-title">YOUR MOVE.<br/><em>YOUR WAY.</em></h2></div><p>No two paths are the same. Create the colorway that moves with you.</p></div>
+      <div class="customizer-shell"><div class="customizer-stage" id="customizer-stage"><div class="floor-grid"></div><div class="custom-shadow"></div><div class="custom-preview"><img id="custom-image" src="images/aerodyne-one.png" alt="Customized STRYDE Aerodyne One sneaker" draggable="false"/></div><div class="preview-top"><span>01 / AERODYNE ONE</span><span>LIVE STUDIO <span class="orange-dot"></span></span></div><div class="preview-bottom"><span>DRAG TO TILT <span class="tilt-arrows">↔</span></span><button id="reset-view" class="round-tool" aria-label="Reset sneaker angle">↺</button></div><div class="preview-glow"></div></div>
+      <div class="customizer-panel"><div class="panel-label">DESIGN YOUR PAIR <span>01 / 03</span></div><h3>AERODYNE<br/>ONE <span class="muted-id">/ 001</span></h3><p>Purpose-built. Personalized by you.</p><div class="panel-divider"></div><div class="option-block"><div class="option-title"><span>01 / COLORWAY</span><strong id="color-name">SOLAR FLARE</strong></div><div class="swatches" id="color-swatches"><button class="swatch active" data-color="solar" style="--swatch:#ff692e" aria-label="Solar Flare colorway" aria-pressed="true"></button><button class="swatch" data-color="ice" style="--swatch:#67c9ff" aria-label="Arctic Ice colorway" aria-pressed="false"></button><button class="swatch" data-color="volt" style="--swatch:#bfff45" aria-label="Acid Volt colorway" aria-pressed="false"></button><button class="swatch" data-color="violet" style="--swatch:#ba73ff" aria-label="After Dark colorway" aria-pressed="false"></button></div></div><div class="option-block"><div class="option-title"><span>02 / SIZE (US)</span><strong id="size-label">SELECT SIZE</strong></div><div class="size-grid" id="size-grid"><button data-size="7">7</button><button data-size="8">8</button><button data-size="9">9</button><button data-size="10">10</button><button data-size="11">11</button><button data-size="12">12</button></div></div><div class="option-block"><div class="option-title"><span>03 / FINISH</span><strong id="finish-label">REFLECTIVE</strong></div><div class="finish-options" id="finish-options"><button class="active" data-finish="reflective">REFLECTIVE</button><button data-finish="matte">MATTE</button></div></div><div class="total-row"><div><span>YOUR CUSTOM PAIR</span><strong>$220.00</strong></div><span>DESIGNED BY YOU</span></div><button class="btn btn-orange fullwidth" id="custom-add">ADD TO BAG <span>↗</span></button><div class="panel-footer">◈ FREE SHIPPING <span>•</span> ◈ 30-DAY RETURNS <span>•</span> DEMO STORE</div></div></div>
+    </section>
+
+    <section class="manifesto" id="story"><div class="manifesto-glow"></div><div class="manifesto-inner reveal"><div class="kicker">WE ARE STRYDE / NOT JUST FOOTWEAR</div><h2>WE DON'T WAIT<br/>FOR <em>TOMORROW.</em><br/>WE MAKE IT.</h2><div class="manifesto-lower"><p>Built for those who refuse the ordinary. For the rulebreakers, pathmakers and relentless movers. The future doesn't move itself.</p><a class="circle-link" href="#collection" aria-label="Explore STRYDE collection">↗</a></div></div><span class="outline-word" aria-hidden="true">MOTION</span></section>
+
+    <section class="community section-pad"><div class="section-header"><div><div class="kicker"><span class="orange-bar"></span> FIELD NOTES / THE MOVEMENT</div><h2>ALWAYS<br/><em>IN MOTION.</em></h2></div><div class="section-side"><p>For the people who write their own rules. Find your speed, own your space and make movement your signature.</p></div></div><div class="editorial-grid"><article class="editorial-card editorial-feature"><div class="editorial-art editorial-art-a"><span class="art-ring"></span><img src="images/aerodyne-one.png" alt="Aerodyne One sneaker collection campaign" loading="lazy"/></div><div class="editorial-caption"><span>01 / THE CAMPAIGN</span><h3>THE SPACE<br/>BETWEEN LIMITS.</h3><a href="#collection" aria-label="Explore the collection">↗</a></div></article><article class="editorial-card editorial-side"><div class="editorial-art editorial-art-b"><span class="giant-plus">✳</span><img src="images/aerodyne-one.png" alt="Technical sneaker editorial close-up" loading="lazy"/></div><div class="editorial-caption"><span>02 / BEHIND THE DESIGN</span><h3>DESIGNED TO<br/>FEEL DIFFERENT.</h3><a href="#technology" aria-label="Explore the technology">↗</a></div></article></div></section>
+
+    <section class="newsletter"><div class="newsletter-copy"><div class="kicker">THE SIGNAL / STAY MOVING</div><h2>DON'T MISS<br/>THE NEXT <em>DROP.</em></h2><p>First access to future releases, design stories, and what comes next.</p></div><form id="newsletter-form" class="newsletter-form"><label for="email">YOUR EMAIL ADDRESS</label><div class="email-line"><input id="email" type="email" placeholder="YOU@THEFUTURE.COM" required autocomplete="email"/><button aria-label="Subscribe to newsletter" type="submit">↗</button></div><small>Frontend demo — no emails are sent or stored on a server.</small></form></section>
+  </main>
+  <footer class="footer"><div class="footer-top"><a href="#home" class="footer-logo">STRYDE<span>®</span></a><div class="footer-links"><div><strong>EXPLORE</strong><a href="#collection">The Collection</a><a href="#technology">Our Technology</a><a href="#customize">Custom Lab</a></div><div><strong>THE BRAND</strong><a href="#story">Our World</a><a href="#story">Manifesto</a><a href="#newsletter-form">Stay Connected</a></div><div><strong>INFORMATION</strong><span>Concept storefront</span><span>No live payments</span><span>Portfolio showcase</span></div></div></div><div class="footer-bottom"><span>© 2026 STRYDE — AN EXPERIMENTAL CONCEPT.</span><span>MADE TO MOVE. NOT TO FOLLOW.</span><a href="#home">BACK TO TOP ↑</a></div></footer>
+  <div class="scrim" id="scrim" hidden></div>
+  <aside id="cart-drawer" class="drawer" aria-label="Shopping bag" aria-modal="true" role="dialog" aria-hidden="true" tabindex="-1"><div class="drawer-head"><div><small>YOUR SELECTION / 001</small><h2>THE BAG <span id="drawer-count">(00)</span></h2></div><button class="close-btn" data-close aria-label="Close shopping bag">×</button></div><div id="cart-items" class="drawer-items"></div><div class="drawer-bottom"><div class="subtotal"><span>SUBTOTAL</span><strong id="subtotal">$0.00</strong></div><p>Shipping and tax calculated at checkout. This is a frontend-only concept store.</p><button id="checkout" class="btn btn-orange fullwidth">CHECKOUT <span>↗</span></button><button data-close class="continue-link">CONTINUE EXPLORING →</button></div></aside>
+  <div id="quick-view" class="modal" aria-modal="true" role="dialog" aria-hidden="true" aria-label="Product details" tabindex="-1"><button class="close-btn modal-close" data-close aria-label="Close product details">×</button><div id="quick-body"></div></div>
+  <div id="search-overlay" class="search-overlay" role="dialog" aria-modal="true" aria-label="Search STRYDE" aria-hidden="true" tabindex="-1"><button class="close-btn search-close" data-close aria-label="Close search">×</button><div class="search-inner"><span class="kicker">FIND YOUR NEXT MOVE</span><label for="search-input">WHAT MOVES YOU?</label><input type="search" id="search-input" placeholder="SEARCH THE COLLECTION…" autocomplete="off"/><div id="search-results"></div></div></div>
+  <div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation" aria-hidden="true" tabindex="-1"><button class="close-btn" data-close aria-label="Close navigation">×</button><a href="#collection">COLLECTION <span>01</span></a><a href="#technology">TECHNOLOGY <span>02</span></a><a href="#customize">CUSTOM LAB <span>03</span></a><a href="#story">OUR WORLD <span>04</span></a><p>STRYDE / MOVE BEYOND / 2026</p></div>
+  <div id="film-overlay" class="film-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="STRYDE motion experience" tabindex="-1"><button class="close-btn film-close" data-close aria-label="Close motion experience">×</button><div class="film-core"><div class="film-circle"></div><img src="images/aerodyne-one.png" alt="STRYDE Aerodyne One"/><div class="film-words">NO LIMITS.<br/><em>JUST MOTION.</em></div></div><div class="film-meta">STRYDE / A VISUAL MOTION EXPERIENCE <div class="film-bar"><i></i></div></div></div>
+  <div id="model-overlay" class="model-overlay" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Interactive three dimensional sneaker engineering scan" tabindex="-1"><button class="close-btn model-close" data-close aria-label="Close 3D viewer">×</button><div class="model-top"><span>STRYDE / DIGITAL DESIGN LAB / 3D-001</span><span><i class="orange-dot"></i> LIVE RENDER</span></div><canvas id="model-canvas" aria-label="Rotatable three dimensional procedural sneaker model"></canvas><div class="model-guide"><span>DRAG TO ORBIT / SCROLL TO ZOOM</span><h2>INSIDE<br/><em>THE BUILD.</em></h2><p>Explore a live WebGL engineering schematic. A conceptual 3D chassis study, not a photogrammetric scan of the product imagery.</p></div><div class="model-controls"><span>SELECT ENERGY:</span><button data-model-color="solar" class="active" style="--swatch:#ff6938" aria-label="Orange energy color"></button><button data-model-color="ice" style="--swatch:#69caff" aria-label="Blue energy color"></button><button data-model-color="volt" style="--swatch:#bfff4a" aria-label="Green energy color"></button><button data-model-color="violet" style="--swatch:#bb79fa" aria-label="Purple energy color"></button><button id="model-reset" class="reset-model">↺ RESET</button></div></div><div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
