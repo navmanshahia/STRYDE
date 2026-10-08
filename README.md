@@ -62,7 +62,16 @@ This remains a **frontend-only portfolio concept**, not a real checkout or engin
 ### Code and hosting
 - `experience-v3.js` owns the hero physics, showroom selector/cameras, illustration lab, transitions and micro-interactions.
 - `glb-engine.js` owns the model, camera presets, mesh highlighting and part separation.
-- `styles.css` includes the STRYDE V3 layouts and responsive overrides.
-- The frontend interactions were checked at desktop and mobile viewport sizes. The complete downloadable development archive also includes a browser interaction test script.
+- `styles.css` includes the STRYDE V3 layouts and responsive overrides (the source additions are also mirrored in `tools/experience-v3.css` for iteration).
+- `tools/test_v3.py` performs desktop/mobile non-WebGL interaction checks.
 - Use any static server (including cPanel) that serves `.glb` as `model/gltf-binary` or `application/octet-stream`, preserves the `models/` directory, and supports same-origin fetch. The visual fallback loads even if GLB fails.
 - Real accounts, checkout, orders, inventory, email delivery and server payments are still intentionally **not connected**.
+
+
+## STRYDE V3.1 — Safari crash prevention
+
+- Detect iPhone, iPad, touch and low-memory devices before styles and scripts load. These devices default to a static cinematic product presentation rather than allocating four simultaneous GLB scenes, an independent shader and an animated lab.
+- Showroom and studio 3D are **opt-in** with visible buttons; only one high-detail GLB WebGL context is allowed at a time. Switching viewers explicitly releases vertex buffers and the previous context. The full-screen engineering viewer is also opt-in.
+- Mobile WebGL context creation uses low-power settings, antialiasing off, and DPR capped to 0.85; automatic continuous GLB rendering and animations are paused. The image fallback stays visible if WebGL is unavailable.
+- Hero background shader is disabled in mobile safe mode, particle simulation starts paused, and lab visuals draw statically until interacted with. The storefront, product cards, cart and material selectors still work.
+- Desktop stays in fully animated mode. The Safari crash shown by the user suggests GPU/memory pressure, but remote iOS crash logs are needed to verify the cause.

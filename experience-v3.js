@@ -2,6 +2,7 @@
 "use strict";
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const lite=Boolean(window.STRYDE_LOW_POWER);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const showroom=$("#showroom-viewport"),fallback=$(".showroom-fallback");
 const hues={solar:"#ff6938",ice:"#69caff",volt:"#bfff4a",violet:"#bb79fa"};
@@ -27,7 +28,7 @@ $$("[data-camera]").forEach(b=>b.addEventListener("click",()=>{
 // Damped spring particles on the hero canvas with pointer forces and collision response.
 const canvas=$("#physics-canvas"),ctx=canvas?.getContext("2d",{alpha:true});
 if(ctx){
- let enabled=!reduced,visible=true,frameId=0,prev=0,w=0,h=0,dpr=1,particles=[];
+ let enabled=!reduced&&!lite,visible=true,frameId=0,prev=0,w=0,h=0,dpr=1,particles=[];
  const pointer={x:-9999,y:-9999,active:false};
  function seed(){particles=Array.from({length:innerWidth<700?28:55},(_,i)=>{
   const x=(.17+(i*.61803398%1)*.7)*w,y=(.15+(i*.438579%1)*.68)*h;
@@ -56,6 +57,7 @@ if(ctx){
  observer.observe(canvas);
  $("#home").addEventListener("pointermove",e=>{const r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;pointer.active=true},{passive:true});
  $("#home").addEventListener("pointerleave",()=>pointer.active=false,{passive:true});
+ if(lite){const b=$("#physics-toggle");b?.setAttribute("aria-pressed","false");if(b)b.textContent="◎ PHYSICS PAUSED — TAP TO ENABLE"}
  $("#physics-toggle")?.addEventListener("click",()=>{
   enabled=!enabled;const b=$("#physics-toggle");b.setAttribute("aria-pressed",String(enabled));b.textContent=enabled?"◉ LIVE PARTICLE PHYSICS":"◎ PHYSICS PAUSED";
   if(enabled){prev=0;frameId=requestAnimationFrame(tick)}else if(frameId){cancelAnimationFrame(frameId);frameId=0}
@@ -99,7 +101,7 @@ if(g){
   print("TRACTION CONTACT GRID",x-130,y+89,10,"#a6bbc6")
  }
  function paint(){if(!w||!h)return;g.clearRect(0,0,w,h);if(mode==="impact")impact();else if(mode==="airflow")airflow();else grip()}
- function tick(t){raf=0;if(!visible||document.hidden)return;clock=t;paint();if(!reduced)raf=requestAnimationFrame(tick)}
+ function tick(t){raf=0;if(!visible||document.hidden)return;clock=t;paint();if(!reduced&&!lite)raf=requestAnimationFrame(tick)}
  const metric=()=>metricValue.textContent=(mode==="grip"?100-value:value)+"%";
  function select(name){
   if(!defs[name])return;mode=name;
@@ -125,14 +127,14 @@ if(curtain)document.addEventListener("click",e=>{
  const hash=a.getAttribute("href");if(!hash||hash==="#")return;
  const node=document.getElementById(hash.slice(1));if(!node)return;
  e.preventDefault();
- if(reduced){node.scrollIntoView({block:"start"});history.replaceState(null,"",hash);return}
+ if(reduced||lite){node.scrollIntoView({block:"start"});history.replaceState(null,"",hash);return}
  transitioning=true;$("#transition-title").textContent=titles[node.id]||"KEEP MOVING.";curtain.classList.add("is-entering");
  setTimeout(()=>{node.scrollIntoView({block:"start",behavior:"instant"});history.replaceState(null,"",hash);curtain.classList.remove("is-entering");curtain.classList.add("is-leaving")},440);
  setTimeout(()=>{curtain.classList.remove("is-leaving");transitioning=false},910);
 },false);
 
 // Cursor lighting, magnetic CTAs and responsive card spotlights.
-if(!reduced&&matchMedia("(hover:hover) and (pointer:fine)").matches){
+if(!reduced&&!lite&&matchMedia("(hover:hover) and (pointer:fine)").matches){
  const halo=$("#cursor-halo");let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
  function chase(){cx+=(mx-cx)*.11;cy+=(my-cy)*.11;if(halo){halo.style.left=cx+"px";halo.style.top=cy+"px"}requestAnimationFrame(chase)}
  window.addEventListener("pointermove",e=>{mx=e.clientX;my=e.clientY},{passive:true});requestAnimationFrame(chase);

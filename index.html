@@ -12,13 +12,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
+  <script>/* Safari/iPhone stability profile: no automatic GPU scenes on touch devices. */
+  (()=>{const ua=navigator.userAgent||'',ios=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),touch=matchMedia('(pointer:coarse)').matches;
+  window.STRYDE_LOW_POWER=Boolean(ios||touch||matchMedia('(max-width:900px)').matches||(navigator.deviceMemory&&navigator.deviceMemory<=4));
+  if(window.STRYDE_LOW_POWER)document.documentElement.classList.add('performance-lite');})();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=3.1.1"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js" defer></script>
   <script src="3d-viewer.js" defer></script>
-  <script src="glb-engine.js" defer></script>
-  <script src="app.js" defer></script>
-  <script src="experience-v3.js" defer></script>
+  <script src="glb-engine.js?v=3.1.1" defer></script>
+  <script src="app.js?v=3.1.1" defer></script>
+  <script src="experience-v3.js?v=3.1.1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -79,6 +84,7 @@
           <div class="showroom-ambient" aria-hidden="true"></div>
           <canvas class="showroom-glb" id="showroom-model" role="img" aria-label="Interactive three-dimensional sneaker showroom. Drag to orbit, zoom with your wheel, or use the camera preset buttons."></canvas>
           <img class="showroom-fallback" src="images/aerodyne-one.png" loading="lazy" alt="Aerodyne One sneaker showroom artwork"/>
+          <button type="button" class="enable-3d" data-activate-3d="showroom" aria-label="Activate interactive 3D sneaker in showroom">◈ ACTIVATE 3D VIEW <span>↗</span></button>
           <div class="showroom-view-label">S / FIELD OF VIEW <span id="showroom-camera-label">01 — THREE QUARTER</span></div>
           <div class="showroom-podium" aria-hidden="true"><span></span></div>
           <div class="showroom-view-controls" aria-label="Showroom camera angles"><button type="button" data-camera="hero" class="active" aria-pressed="true">01 / HERO</button><button type="button" data-camera="front" aria-pressed="false">02 / SIDE</button><button type="button" data-camera="top" aria-pressed="false">03 / TOP</button><button type="button" data-camera="heel" aria-pressed="false">04 / HEEL</button></div>
@@ -129,7 +135,7 @@
     </section>
 
     <section class="customizer section-pad" id="customize" aria-labelledby="customize-title"><div class="customizer-heading"><div><div class="kicker"><span class="orange-bar"></span> THE CUSTOM LAB / YOUR RULES</div><h2 id="customize-title">YOUR MOVE.<br/><em>YOUR WAY.</em></h2></div><p>No two paths are the same. Create the colorway that moves with you.</p></div>
-      <div class="customizer-shell"><div class="customizer-stage" id="customizer-stage"><div class="floor-grid"></div><div class="custom-shadow"></div><div class="custom-preview"><canvas id="custom-model" class="studio-live" aria-label="3D sneaker customizer, drag to rotate, scroll to zoom, keyboard arrows to rotate" role="img"></canvas><img id="custom-image" src="images/aerodyne-one.png" alt="Customized STRYDE Aerodyne One sneaker" draggable="false"/></div><div class="preview-top"><span>01 / AERODYNE ONE</span><span>LIVE STUDIO <span class="orange-dot"></span></span></div><div class="preview-bottom"><span>DRAG TO TILT <span class="tilt-arrows">↔</span></span><button id="reset-view" class="round-tool" aria-label="Reset sneaker angle">↺</button></div><div class="preview-glow"></div></div>
+      <div class="customizer-shell"><div class="customizer-stage" id="customizer-stage"><div class="floor-grid"></div><div class="custom-shadow"></div><div class="custom-preview"><canvas id="custom-model" class="studio-live" aria-label="3D sneaker customizer, drag to rotate, scroll to zoom, keyboard arrows to rotate" role="img"></canvas><img id="custom-image" src="images/aerodyne-one.png" alt="Customized STRYDE Aerodyne One sneaker" draggable="false"/></div><button type="button" class="enable-3d studio-3d-trigger" data-activate-3d="studio" aria-label="Activate interactive 3D sneaker customizer">◈ VIEW SNEAKER IN 3D <span>↗</span></button><div class="preview-top"><span>01 / AERODYNE ONE</span><span>LIVE STUDIO <span class="orange-dot"></span></span></div><div class="preview-bottom"><span>DRAG TO TILT <span class="tilt-arrows">↔</span></span><button id="reset-view" class="round-tool" aria-label="Reset sneaker angle">↺</button></div><div class="preview-glow"></div></div>
       <div class="customizer-panel"><div class="panel-label">DESIGN YOUR PAIR <span>01 / 03</span></div><h3>AERODYNE<br/>ONE <span class="muted-id">/ 001</span></h3><p>Purpose-built. Personalized by you.</p><div class="panel-divider"></div><div class="option-block"><div class="option-title"><span>01 / COLORWAY</span><strong id="color-name">SOLAR FLARE</strong></div><div class="swatches" id="color-swatches"><button class="swatch active" data-color="solar" style="--swatch:#ff692e" aria-label="Solar Flare colorway" aria-pressed="true"></button><button class="swatch" data-color="ice" style="--swatch:#67c9ff" aria-label="Arctic Ice colorway" aria-pressed="false"></button><button class="swatch" data-color="volt" style="--swatch:#bfff45" aria-label="Acid Volt colorway" aria-pressed="false"></button><button class="swatch" data-color="violet" style="--swatch:#ba73ff" aria-label="After Dark colorway" aria-pressed="false"></button></div></div><div class="material-custom-grid" aria-label="Material customizer">
  <div class="material-row"><span>02 / UPPER</span><div class="material-swatches" id="upper-swatches"><button class="active" data-upper="ivory" style="--chip:#e1e5e5" aria-label="Ivory knit upper" title="Ivory knit"></button><button data-upper="slate" style="--chip:#888f9a" aria-label="Slate knit upper" title="Slate knit"></button><button data-upper="obsidian" style="--chip:#272e39" aria-label="Obsidian knit upper" title="Obsidian knit"></button><button data-upper="lunar" style="--chip:#c7cccf" aria-label="Lunar silver knit upper" title="Lunar silver"></button></div></div>
  <div class="material-row"><span>03 / LACES</span><div class="material-swatches" id="lace-swatches"><button class="active" data-laces="frost" style="--chip:#eef0eb" aria-label="Frost laces" title="Frost"></button><button data-laces="ink" style="--chip:#171f29" aria-label="Ink laces" title="Ink"></button><button data-laces="flare" style="--chip:#ff6938" aria-label="Flare laces" title="Flare"></button></div></div>

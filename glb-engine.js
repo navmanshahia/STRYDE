@@ -62,6 +62,7 @@ async function loadGLB(){if(glbPromise)return glbPromise;glbPromise=(async()=>{
 })().catch(e=>{glbPromise=null;throw e});return glbPromise}
 const all=new Map();let spin=0,scrollListening=false,manualTech=false,focusGroup='all';
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lite=Boolean(window.STRYDE_LOW_POWER);let liteActiveMode=null;
 function compile(gl,t,code){const s=gl.createShader(t);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
 function makeProgram(gl){const p=gl.createProgram();gl.attachShader(p,compile(gl,gl.VERTEX_SHADER,programVS));gl.attachShader(p,compile(gl,gl.FRAGMENT_SHADER,programFS));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));return p}
 function partOffset(name){if(/outsole|tread/i.test(name))return [0,-.78,0];if(/midsole|air_unit/i.test(name))return [0,-.32,0];if(/lace|tongue/i.test(name))return [0,.54,.0];if(/liner/i.test(name))return [0,.45,0];if(/cage|stitch|detail|perf|accent/i.test(name))return [0,.25,0];return [0,.18,0]}
@@ -78,7 +79,7 @@ function activeMaterial(name,original){let base=original.pbrMetallicRoughness?.b
  return {base,emissive,metallic,rough}
 }
 class Viewer{
- constructor(canvas,mode){this.canvas=canvas;this.mode=mode;this.ready=false;this.dead=false;this.active=true;this.yaw=mode==='hero'?.48:mode==='tech'?.22:mode==='showroom'?.65:.36;this.pitch=mode==='hero'?-.16:-.15;this.zoom=0;this.ty=this.yaw;this.tp=this.pitch;this.tz=0;this.explode=0;this.explodeTarget=0;this.scroll=0;this.lastPointer={x:0,y:0};this.pointerDown=false;this.raf=0;this.drawn=0;
+ constructor(canvas,mode){this.canvas=canvas;this.mode=mode;this.ready=false;this.dead=false;this.active=true;this.yaw=mode==='hero'?.48:mode==='tech'?.22:mode==='showroom'?.65:.36;this.pitch=mode==='hero'?-.16:-.15;this.zoom=0;this.ty=this.yaw;this.tp=this.pitch;this.tz=0;this.explode=0;this.explodeTarget=0;this.scroll=0;this.lastPointer={x:0,y:0};this.pointerDown=false;this.raf=0;this.drawn=0;this.gpuBuffers=[];this.gpuArrays=[];
    this.onDown=e=>{this.pointerDown=true;this.startX=e.clientX;this.startY=e.clientY;canvas.setPointerCapture(e.pointerId)};
    this.onMove=e=>{if(!this.pointerDown)return;this.ty+=(e.clientX-this.startX)*.008;this.tp=clamp(this.tp+(e.clientY-this.startY)*.006,-.9,.65);this.startX=e.clientX;this.startY=e.clientY;this.schedule()};
    this.onUp=()=>{this.pointerDown=false};this.onWheel=e=>{e.preventDefault();this.tz=clamp(this.tz+Math.sign(e.deltaY)*.45,-2.7,5);this.schedule()};
@@ -87,31 +88,47 @@ class Viewer{
    canvas.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','-','Home'].includes(e.key)){e.preventDefault();if(e.key==='Home')this.reset();else if(e.key==='ArrowLeft')this.ty-=.2;else if(e.key==='ArrowRight')this.ty+=.2;else if(e.key==='ArrowUp')this.tp=clamp(this.tp-.15,-.8,.6);else if(e.key==='ArrowDown')this.tp=clamp(this.tp+.15,-.8,.6);else if(e.key==='+')this.tz=clamp(this.tz-.5,-2.7,5);else if(e.key==='-')this.tz=clamp(this.tz+.5,-2.7,5);this.schedule()}});
    this.io=new IntersectionObserver(e=>{this.visible=e[0].isIntersecting;if(this.visible)this.schedule()},{threshold:0});this.io.observe(canvas);
  }
- async init(){let gl=this.canvas.getContext('webgl2',{alpha:true,antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:false});if(!gl)throw Error('WebGL2 unavailable');this.gl=gl;
+ async init(){let gl=this.canvas.getContext('webgl2',{alpha:true,antialias:!lite,powerPreference:lite?'low-power':'high-performance',preserveDrawingBuffer:false});if(!gl)throw Error('WebGL2 unavailable');this.gl=gl;
    const data=await loadGLB();if(this.dead)return;this.data=data;this.program=makeProgram(gl);this.uniform={};['uYaw','uPitch','uZoom','uAspect','uScale','uHover','uExplode','uPartOffset','uBase','uEmissive','uMetal','uRough','uTime','uKnit'].forEach(k=>this.uniform[k]=gl.getUniformLocation(this.program,k));
    this.drawables=[];for(const mesh of data.json.meshes){for(const primitive of mesh.primitives){const name=mesh.name;const p=vertexGetter(gl,data,primitive.attributes.POSITION),n=vertexGetter(gl,data,primitive.attributes.NORMAL),ind=vertexGetter(gl,data,primitive.indices);
-     const vao=gl.createVertexArray();gl.bindVertexArray(vao);for(const [i,array] of [[0,p],[1,n]]){const vbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,array.values,gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,3,gl.FLOAT,false,0,0)}
-     const ebo=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ebo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,ind.values,gl.STATIC_DRAW);gl.bindVertexArray(null);
+     const vao=gl.createVertexArray();this.gpuArrays.push(vao);gl.bindVertexArray(vao);for(const [i,array] of [[0,p],[1,n]]){const vbo=gl.createBuffer();this.gpuBuffers.push(vbo);gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,array.values,gl.STATIC_DRAW);gl.enableVertexAttribArray(i);gl.vertexAttribPointer(i,3,gl.FLOAT,false,0,0)}
+     const ebo=gl.createBuffer();this.gpuBuffers.push(ebo);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ebo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,ind.values,gl.STATIC_DRAW);gl.bindVertexArray(null);
      this.drawables.push({vao,indexCount:ind.count,indexType:ind.component===5125?gl.UNSIGNED_INT:ind.component===5123?gl.UNSIGNED_SHORT:gl.UNSIGNED_BYTE,name,offset:partOffset(name),material:data.json.materials[primitive.material]})}}
    gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);this.ready=true;
    const host=this.canvas.parentElement;host?.classList.add('glb-loaded');this.canvas.setAttribute('data-model-ready','true');this.schedule();
  }
  schedule(){if(this.dead||!this.ready||!this.active||!this.visible||document.hidden||this.raf)return;this.raf=requestAnimationFrame(t=>this.draw(t))}
  draw(t){this.raf=0;if(this.dead||!this.active||!this.visible||document.hidden)return;const gl=this.gl,w=this.canvas.clientWidth,h=this.canvas.clientHeight;if(!w||!h)return;
-   const dpr=Math.min(devicePixelRatio||1,innerWidth<750?1.2:1.6);const cw=Math.round(w*dpr),ch=Math.round(h*dpr);if(cw!==this.canvas.width||ch!==this.canvas.height){this.canvas.width=cw;this.canvas.height=ch;gl.viewport(0,0,cw,ch)}
+   const dpr=lite?Math.min(devicePixelRatio||1,.85):Math.min(devicePixelRatio||1,innerWidth<750?1.2:1.6);const cw=Math.round(w*dpr),ch=Math.round(h*dpr);if(cw!==this.canvas.width||ch!==this.canvas.height){this.canvas.width=cw;this.canvas.height=ch;gl.viewport(0,0,cw,ch)}
    const smooth=reduced?1:.095;this.yaw+=(this.ty-this.yaw)*smooth;this.pitch+=(this.tp-this.pitch)*smooth;this.zoom+=(this.tz-this.zoom)*smooth;this.explode+=(this.explodeTarget-this.explode)*(reduced?1:.09);
    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);
    const U=this.uniform,un1=(k,v)=>gl.uniform1f(U[k],v);un1('uYaw',this.yaw);un1('uPitch',this.pitch);un1('uZoom',this.zoom);un1('uAspect',w/h);
    un1('uScale',this.mode==='hero'?1.15:this.mode==='tech'?1.10:this.mode==='overlay'?1.22:this.mode==='showroom'?1.35:1.02);
-   un1('uHover',reduced?0:Math.sin(t*.0011)*.045);un1('uExplode',this.explode);un1('uTime',t*.001);
+   un1('uHover',reduced||lite?0:Math.sin(t*.0011)*.045);un1('uExplode',this.explode);un1('uTime',t*.001);
    for(const part of this.drawables){const m=activeMaterial(part.name,part.material);if(this.mode==='tech'&&focusGroup!=='all'){let match=focusGroup==='upper'?/upper|knit|lace|tongue|liner|stitch|perf/i.test(part.name):focusGroup==='cushion'?/midsole|air_unit|foam|silver/i.test(part.name):/outsole|tread/i.test(part.name);if(!match){m.base=m.base.map(x=>x*.17);m.emissive=[0,0,0]}else{m.emissive=m.emissive.map(x=>x*2.0)}}gl.uniform3fv(U.uBase,m.base);gl.uniform3fv(U.uEmissive,m.emissive);un1('uMetal',m.metallic);un1('uRough',m.rough);un1('uKnit',part.name==='Upper_Knit'?1:0);gl.uniform3fv(U.uPartOffset,part.offset);gl.bindVertexArray(part.vao);gl.drawElements(gl.TRIANGLES,part.indexCount,part.indexType,0)}gl.bindVertexArray(null);
-   if(!reduced||Math.abs(this.ty-this.yaw)+Math.abs(this.explodeTarget-this.explode)>.002)this.schedule();
+   if((!reduced&&!lite)||Math.abs(this.ty-this.yaw)+Math.abs(this.tp-this.pitch)+Math.abs(this.tz-this.zoom)+Math.abs(this.explodeTarget-this.explode)>.006)this.schedule();
  }
  reset(){this.ty=this.mode==='tech'?.22:.48;this.tp=-.15;this.tz=0;this.explodeTarget=0;this.schedule()}
  deactivate(){this.active=false;if(this.raf)cancelAnimationFrame(this.raf);this.raf=0}
  activate(){this.active=true;this.visible=true;this.schedule()}
+ dispose(){if(this.dead)return;this.deactivate();this.dead=true;this.io?.disconnect();this.canvas.parentElement?.classList.remove('glb-loaded');this.canvas.removeAttribute('data-model-ready');
+   this.canvas.removeEventListener('pointerdown',this.onDown);this.canvas.removeEventListener('pointermove',this.onMove);this.canvas.removeEventListener('pointerup',this.onUp);this.canvas.removeEventListener('pointercancel',this.onUp);this.canvas.removeEventListener('wheel',this.onWheel);
+   if(this.gl){for(const b of this.gpuBuffers)this.gl.deleteBuffer(b);for(const v of this.gpuArrays)this.gl.deleteVertexArray(v);if(this.program)this.gl.deleteProgram(this.program);this.gl.getExtension('WEBGL_lose_context')?.loseContext()}
+ }
 }
-async function create(canvas,mode){if(!canvas)return;let view=new Viewer(canvas,mode);all.set(mode,view);try{await view.init()}catch(err){console.warn('STRYDE high-detail GLB unavailable; keeping image fallback:',err.message);view.dead=true;view.io.disconnect();all.delete(mode);if(mode==='overlay')window.Stryde3DFallback?.start(canvas,style.accent)}return view}
+async function create(canvas,mode){if(!canvas)return;
+ if(lite){for(const [key,old] of all){if(key!==mode){old.dispose();all.delete(key)}}liteActiveMode=mode}
+ const existing=all.get(mode);if(existing&&!existing.dead){existing.activate();return existing}
+ let view=new Viewer(canvas,mode);all.set(mode,view);
+ try{await view.init();if(view.dead)return view;
+   view.canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();view.deactivate();view.dead=true;view.canvas.parentElement?.classList.remove('glb-loaded');all.delete(mode);if(lite)updateButtons()}, {once:true});
+ }catch(err){console.warn('STRYDE high-detail GLB unavailable; keeping image fallback:',err.message);view.dispose();all.delete(mode);if(mode==='overlay'&&!lite)window.Stryde3DFallback?.start(canvas,style.accent)}
+ if(lite)updateButtons();return view}
+function updateButtons(){document.querySelectorAll('[data-activate-3d]').forEach(button=>{
+ const active=button.dataset.activate3d===liteActiveMode&&Boolean(all.get(liteActiveMode)?.ready);
+ button.innerHTML=active?'◉ 3D ACTIVE <span>↗</span>':'◈ ACTIVATE 3D VIEW <span>↗</span>';
+ button.setAttribute('aria-pressed',String(active));});}
+function releaseMode(mode){const view=all.get(mode);if(view){view.dispose();all.delete(mode)}if(lite&&liteActiveMode===mode)liteActiveMode=null;if(lite)updateButtons()}
 function setStyle(options){Object.keys(style).forEach(k=>{if(options[k]!==undefined)style[k]=options[k]});for(const view of all.values())view.schedule()}
 function reset(mode){all.get(mode)?.reset()}
 function setExplode(value){manualTech=true;let v=all.get('tech');if(v){v.explodeTarget=typeof value==='number'?clamp(value,0,1):(value?1:0);v.schedule()}}
@@ -122,12 +139,25 @@ function applyScroll(){if(reduced)return;const hero=all.get('hero');if(hero){con
  const tech=all.get('tech'),node=document.querySelector('#technology');if(tech&&node){const rect=node.getBoundingClientRect(),p=clamp((innerHeight-rect.top)/(innerHeight+rect.height*.6),0,1);if(!tech.pointerDown){tech.ty=.20+p*.34;tech.tp=-.15+p*.16}if(!manualTech&&!document.querySelector('#tech-visual')?.classList.contains('exploded'))tech.explodeTarget=Math.sin(Math.PI*p)*.82;tech.schedule()}}
 let frame=0;function onScroll(){if(frame)return;frame=requestAnimationFrame(()=>{frame=0;applyScroll()})}
 function scrollSetup(){if(scrollListening)return;scrollListening=true;window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll,{passive:true});if(window.ScrollTrigger&&window.gsap){try{ScrollTrigger.create({trigger:'#technology',start:'top bottom',end:'bottom top',scrub:true,onUpdate:onScroll})}catch{}}setTimeout(applyScroll,180)}
-function init(){create(document.querySelector('#hero-model'), 'hero');create(document.querySelector('#custom-model'),'studio');create(document.querySelector('#tech-model'),'tech');const shoe=document.querySelector('#showroom-model');if(shoe){const io=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){io.disconnect();create(shoe,'showroom')}},{rootMargin:'400px'});io.observe(shoe)}scrollSetup()}
+function init(){
+ if(lite){
+   document.querySelectorAll('[data-activate-3d]').forEach(button=>button.addEventListener('click',()=>{
+     const mode=button.dataset.activate3d,canvas=document.querySelector(mode==='showroom'?'#showroom-model':'#custom-model');
+     if(liteActiveMode===mode&&all.get(mode)?.ready){releaseMode(mode);return}
+     button.disabled=true;button.textContent='LOADING 3D…';
+     create(canvas,mode).finally(()=>{button.disabled=false;updateButtons()});
+   }));
+   document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const name of [...all.keys()])releaseMode(name)}});
+   window.addEventListener('pagehide',()=>{for(const name of [...all.keys()])releaseMode(name)});
+   scrollSetup();return;
+ }
+ document.querySelectorAll('[data-activate-3d]').forEach(b=>b.hidden=true);
+ create(document.querySelector('#hero-model'), 'hero');create(document.querySelector('#custom-model'),'studio');create(document.querySelector('#tech-model'),'tech');const shoe=document.querySelector('#showroom-model');if(shoe){const io=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){io.disconnect();create(shoe,'showroom')}},{rootMargin:'400px'});io.observe(shoe)}scrollSetup()}
 window.Stryde3DFallback=window.Stryde3D;
 window.StrydeGLB={style,setStyle,reset,setExplode,setTechFocus,resetTechScroll,showroomPreset,loaded:()=>!!all.get('studio')?.ready,showroomLoaded:()=>!!all.get('showroom')?.ready};
 window.Stryde3D={
  start(canvas,color){style.accent=color||style.accent;const old=all.get('overlay');if(old){old.activate();old.schedule();return}create(canvas,'overlay')},
- stop(){all.get('overlay')?.deactivate();window.Stryde3DFallback?.stop()},
+ stop(){if(lite)releaseMode('overlay');else all.get('overlay')?.deactivate();window.Stryde3DFallback?.stop()},
  setColor(color){setStyle({accent:color})},reset(){reset('overlay');},
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
