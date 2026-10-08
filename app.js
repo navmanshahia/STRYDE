@@ -1,0 +1,99 @@
+(()=>{
+'use strict';
+const $=(sel,ctx=document)=>ctx.querySelector(sel), $$=(sel,ctx=document)=>[...ctx.querySelectorAll(sel)];
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IMAGE='images/aerodyne-one.png';
+const PRODUCTS=[
+ {id:'aerodyne',name:'AERODYNE ONE',kind:'HIGH-VELOCITY RUNNER',price:220,tag:'THE ORIGINAL / BESTSELLER',index:'01',filter:'',accent:'#ff6938',color:'SOLAR FLARE',badge:'RUNNING'},
+ {id:'volt',name:'VOLT PRO',kind:'ALL-TERRAIN ENERGY',price:245,tag:'NEW COLORWAY',index:'02',filter:'brightness(.72) contrast(1.45) saturate(1.25)',accent:'#ff8158',color:'DARK CURRENT',badge:'TRAINING'},
+ {id:'nexus',name:'NEXUS',kind:'FUTURE IN EVERY STEP',price:210,tag:'LIMITED SERIES',index:'03',filter:'hue-rotate(164deg) saturate(1.15)',accent:'#69bfff',color:'ARCTIC ICE',badge:'LIFESTYLE'},
+ {id:'phantom',name:'PHANTOM',kind:'BUILT AFTER DARK',price:230,tag:'STUDIO EXCLUSIVE',index:'04',filter:'hue-rotate(242deg) saturate(1.3) brightness(.88)',accent:'#a478ff',color:'AFTER DARK',badge:'LIFESTYLE'}
+];
+const COLORS={solar:{name:'SOLAR FLARE',hue:'',accent:'#ff6938',rgb:'255,105,56'},ice:{name:'ARCTIC ICE',hue:'hue-rotate(164deg) saturate(1.13)',accent:'#69caff',rgb:'105,202,255'},volt:{name:'ACID VOLT',hue:'hue-rotate(75deg) saturate(1.5)',accent:'#bfff4a',rgb:'191,255,74'},violet:{name:'AFTER DARK',hue:'hue-rotate(248deg) saturate(1.2)',accent:'#bb79fa',rgb:'187,121,250'}};
+let cart=[];try{const stored=JSON.parse(localStorage.getItem('stryde-cart-v1')||'[]');if(Array.isArray(stored))cart=stored.filter(i=>PRODUCTS.some(p=>p.id===i.id)&&Number.isInteger(i.qty)&&i.qty>0&&i.qty<100)}catch{}
+let saved=[];try{saved=JSON.parse(localStorage.getItem('stryde-faves-v1')||'[]')}catch{}
+let selectedSize=null,selectedColor='solar',selectedFinish='reflective',activeDialog=null,previousFocus=null,quickProduct=null,quickSize=null,filmTimeout=null,toastTimeout;
+const money=n=>'$'+Number(n).toFixed(2);
+const saveCart=()=>{try{localStorage.setItem('stryde-cart-v1',JSON.stringify(cart))}catch{}};
+const saveFaves=()=>{try{localStorage.setItem('stryde-faves-v1',JSON.stringify(saved))}catch{}};
+function toast(message){const e=$('#toast');e.textContent=message;e.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>e.classList.remove('show'),3000)}
+function renderProducts(){const grid=$('#product-grid');grid.innerHTML=PRODUCTS.map(p=>`<article class="product-card" data-id="${p.id}"><div class="product-visual" style="--shoe-filter:${p.filter};--product-accent:${p.accent}"><span class="product-tag">${p.tag}</span><span class="product-number">${p.index} / 04</span><img src="${IMAGE}" alt="${p.name} footwear colorway" loading="lazy"/><span class="product-mark">↗ ${p.badge}</span></div><div class="product-bottom"><div><h3>${p.name}</h3><span>${p.kind}</span></div><strong>$${p.price}</strong></div><div class="product-actions"><button class="mini-add" data-view="${p.id}" aria-label="View ${p.name} details">EXPLORE / SELECT SIZE ↗</button><button class="favorite ${saved.includes(p.id)?'active':''}" data-fav="${p.id}" aria-label="${saved.includes(p.id)?'Remove':'Add'} ${p.name} ${saved.includes(p.id)?'from':'to'} favorites" aria-pressed="${saved.includes(p.id)}">${saved.includes(p.id)?'♥':'♡'}</button></div></article>`).join('');
+ $$('[data-view]',grid).forEach(b=>b.addEventListener('click',()=>openProduct(b.dataset.view)));
+ $$('[data-fav]',grid).forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.fav;saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];saveFaves();renderProducts();toast(saved.includes(id)?'SAVED TO YOUR FAVORITES':'REMOVED FROM FAVORITES')}));
+ $$('.product-visual',grid).forEach(v=>v.addEventListener('click',()=>openProduct(v.parentElement.dataset.id)));
+}
+function addToCart(id,size,color,finish='reflective'){
+ if(!size){toast('SELECT YOUR SIZE TO CONTINUE');return false}
+ const key=`${id}|${size}|${color}|${finish}`;
+ const line=cart.find(i=>i.key===key);
+ if(line)line.qty=Math.min(99,line.qty+1);else cart.push({id,size,color,finish,key,qty:1});
+ saveCart();renderCart();toast('ADDED TO BAG — KEEP MOVING');return true;
+}
+function renderCart(){const count=cart.reduce((n,i)=>n+i.qty,0);$('#cart-count').textContent=`(${String(count).padStart(2,'0')})`;$('#drawer-count').textContent=`(${String(count).padStart(2,'0')})`;
+ const container=$('#cart-items');if(!cart.length){container.innerHTML='<div class="empty-bag"><div class="empty-symbol">⌑</div><b>NOTHING HERE. YET.</b><p>Great moves start with a first step.</p></div>'}else{
+ container.innerHTML=cart.map((i,index)=>{const p=PRODUCTS.find(p=>p.id===i.id);const filter=i.id==='aerodyne'?(COLORS[i.color]?.hue||''):p.filter;return `<div class="cart-line"><img src="${IMAGE}" alt="${p.name}" style="filter:${filter}"/><div class="cart-line-info"><strong>${p.name}</strong><small>US ${i.size} / ${COLORS[i.color]?.name||p.color} / ${i.finish.toUpperCase()}</small><b>${money(p.price*i.qty)}</b><div class="qty-controls"><button data-qty="${index}" data-delta="-1" aria-label="Decrease quantity">−</button><span>${i.qty}</span><button data-qty="${index}" data-delta="1" aria-label="Increase quantity">+</button><button class="remove-line" data-remove="${index}">REMOVE</button></div></div></div>`}).join('');
+ $$('[data-qty]',container).forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.qty),delta=Number(b.dataset.delta);cart[i].qty+=delta;if(cart[i].qty<1)cart.splice(i,1);saveCart();renderCart()}));
+ $$('[data-remove]',container).forEach(b=>b.addEventListener('click',()=>{cart.splice(Number(b.dataset.remove),1);saveCart();renderCart();toast('REMOVED FROM BAG')}));
+ }
+ $('#subtotal').textContent=money(cart.reduce((n,i)=>n+(PRODUCTS.find(p=>p.id===i.id)?.price||0)*i.qty,0));
+}
+function openDialog(selector){if(activeDialog)closeDialog();const node=$(selector);previousFocus=document.activeElement;activeDialog=node;$('#scrim').hidden=false;node.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>{const initial=node.querySelector('input, [data-close], button');(initial||node).focus({preventScroll:true})},80)}
+function closeDialog(){if(!activeDialog)return;const node=activeDialog;activeDialog=null;node.setAttribute('aria-hidden','true');$('#scrim').hidden=true;document.body.style.overflow='';clearTimeout(filmTimeout);if(node.id==='model-overlay')window.Stryde3D?.stop();if(previousFocus?.focus)previousFocus.focus({preventScroll:true})}
+$$('[data-close]').forEach(b=>b.addEventListener('click',closeDialog));$('#scrim').addEventListener('click',closeDialog);
+document.addEventListener('keydown',e=>{if(!activeDialog)return;if(e.key==='Escape'){closeDialog();return}if(e.key==='Tab'){const focusable=$$('button:not([disabled]),a[href],input:not([disabled]),[tabindex]:not([tabindex="-1"])',activeDialog).filter(el=>el.offsetWidth||el.offsetHeight);if(!focusable.length)return;const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+$('#open-cart').addEventListener('click',()=>{renderCart();openDialog('#cart-drawer')});
+$('#checkout').addEventListener('click',()=>toast(cart.length?'DEMO MODE: PAYMENTS ARE NOT CONNECTED YET':'YOUR BAG IS EMPTY'));
+$('#open-menu').addEventListener('click',()=>openDialog('#mobile-menu'));
+$$('#mobile-menu a').forEach(a=>a.addEventListener('click',closeDialog));
+$('#open-search').addEventListener('click',()=>{openDialog('#search-overlay');$('#search-input').value='';renderSearch('');setTimeout(()=>$('#search-input').focus(),90)});
+function renderSearch(term){const matches=PRODUCTS.filter(p=>`${p.name} ${p.kind} ${p.color} ${p.badge}`.toLowerCase().includes(term.toLowerCase()));$('#search-results').innerHTML=matches.length?matches.map(p=>`<button class="search-result" data-search-id="${p.id}"><img src="${IMAGE}" alt="" style="filter:${p.filter}"/><span><b>${p.name}</b><small>${p.kind}</small></span><span>$${p.price} ↗</span></button>`).join(''):'<p style="padding:30px 0;color:#9da4a9">NO MATCHES. TRY A DIFFERENT MOVE.</p>';
+ $$('[data-search-id]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.searchId;closeDialog();setTimeout(()=>openProduct(id),160)}));}
+$('#search-input').addEventListener('input',e=>renderSearch(e.target.value.trim()));
+function openProduct(id){quickProduct=PRODUCTS.find(p=>p.id===id);if(!quickProduct)return;quickSize=null;
+ $('#quick-body').innerHTML=`<div class="quick-layout"><div class="quick-art" style="--shoe-filter:${quickProduct.filter}"><img src="${IMAGE}" alt="${quickProduct.name}"/></div><div class="quick-details"><div class="kicker">STRYDE / PERFORMANCE SERIES ${quickProduct.index}</div><h3>${quickProduct.name}</h3><p>${quickProduct.kind}. Experimental engineering meets an unapologetic attitude. Designed to break the pattern.</p><div class="quick-price">${money(quickProduct.price)}</div><label>SELECT US SIZE <span id="quick-size-label" style="color:#ff6938;float:right">— REQUIRED</span></label><div class="size-grid" id="quick-sizes">${[7,8,9,10,11,12].map(n=>`<button data-quick-size="${n}">${n}</button>`).join('')}</div><button class="btn btn-orange fullwidth" id="quick-add">ADD TO BAG <span>↗</span></button><p style="font-size:10px;margin-top:14px">Concept item. No live orders or payments.</p></div></div>`;
+ $$('[data-quick-size]').forEach(b=>b.addEventListener('click',()=>{quickSize=b.dataset.quickSize;$$('[data-quick-size]').forEach(x=>x.classList.toggle('active',x===b));$('#quick-size-label').textContent=`US ${quickSize}`}));
+ $('#quick-add').addEventListener('click',()=>{if(addToCart(quickProduct.id,quickSize,quickProduct.id==='nexus'?'ice':quickProduct.id==='phantom'?'violet':'solar')){closeDialog();setTimeout(()=>openDialog('#cart-drawer'),200)}});
+ openDialog('#quick-view');
+}
+// Color, size and finish lab (preview artwork is 2.5D; shader background provides independent real-time WebGL).
+function updateCustomizer(){const c=COLORS[selectedColor];$('#color-name').textContent=c.name;$('#finish-label').textContent=selectedFinish.toUpperCase();$('#size-label').textContent=selectedSize?'US '+selectedSize:'SELECT SIZE';
+ $('#custom-image').style.setProperty('--custom-filter',`${c.hue} ${selectedFinish==='matte'?'saturate(.55) brightness(.87)':''}`);
+ $('#customizer-stage').style.setProperty('--accent-rgb',c.rgb);$$('.swatch').forEach(b=>{const active=b.dataset.color===selectedColor;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});$$('#size-grid button').forEach(b=>b.classList.toggle('active',b.dataset.size===selectedSize));$$('#finish-options button').forEach(b=>b.classList.toggle('active',b.dataset.finish===selectedFinish));
+}
+$$('#color-swatches button').forEach(b=>b.addEventListener('click',()=>{selectedColor=b.dataset.color;updateCustomizer()}));
+$$('#size-grid button').forEach(b=>b.addEventListener('click',()=>{selectedSize=b.dataset.size;updateCustomizer()}));
+$$('#finish-options button').forEach(b=>b.addEventListener('click',()=>{selectedFinish=b.dataset.finish;updateCustomizer()}));
+$('#custom-add').addEventListener('click',()=>{if(addToCart('aerodyne',selectedSize,selectedColor,selectedFinish))openDialog('#cart-drawer')});
+$('#view-3d').addEventListener('click',()=>{openDialog('#model-overlay');$$('[data-model-color]').forEach(b=>b.classList.toggle('active',b.dataset.modelColor===selectedColor));window.Stryde3D?.start($('#model-canvas'),selectedColor)});
+$$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>{$$('[data-model-color]').forEach(x=>x.classList.toggle('active',x===b));window.Stryde3D?.setColor(b.dataset.modelColor)}));
+$('#model-reset').addEventListener('click',()=>window.Stryde3D?.reset());
+$('#reset-view').addEventListener('click',()=>{const img=$('#custom-image');img.style.transform='rotate(-10deg)';toast('VIEW RESET')});
+function stageParallax(node,target,range=10){if(reduced||!node||!target)return;let raf=null;node.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=node.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{target.style.transform=`perspective(1000px) rotateY(${x*range}deg) rotateX(${y*-range*.6}deg) translate3d(${x*9}px,${y*8}px,0)`})});node.addEventListener('pointerleave',()=>target.style.transform='')}
+stageParallax($('#shoe-stage'),$('.shoe-scene'),14);stageParallax($('#customizer-stage'),$('.custom-preview'),19);
+let touchStartX=0;$('#customizer-stage').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX},{passive:true});$('#customizer-stage').addEventListener('touchmove',e=>{const diff=e.touches[0].clientX-touchStartX;$('#custom-image').style.transform=`rotate(${-10+Math.max(-14,Math.min(14,diff*.08))}deg)`},{passive:true});
+// Technical layers: reversible exploded view.
+$('#explode-button').addEventListener('click',()=>{const visual=$('#tech-visual');const on=visual.classList.toggle('exploded');$('#explode-button').innerHTML=`${on?'REASSEMBLE THE SHOE':'EXPLORE THE ENGINEERING'} <span>↗</span>`});
+// Fifteen-second original motion montage; not a video file.
+$('#open-film').addEventListener('click',()=>{openDialog('#film-overlay');filmTimeout=setTimeout(()=>{if(activeDialog===$('#film-overlay'))closeDialog()},15000)});
+$('#newsletter-form').addEventListener('submit',e=>{e.preventDefault();toast('DEMO FORM VALIDATED — NO EMAIL WAS SENT');e.target.reset()});
+renderProducts();renderCart();updateCustomizer();
+// Progressive entrance effects: GSAP if its CDN loaded, CSS + IntersectionObserver otherwise.
+const observe=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('is-visible');observe.unobserve(e.target)}),{threshold:.08});$$('.reveal').forEach(el=>observe.observe(el));
+const cards=$$('.product-card,.editorial-card,.option-block');if(!reduced){cards.forEach(el=>{el.classList.add('reveal');observe.observe(el)})}
+const countObserver=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,target=Number(el.dataset.counter);let start=performance.now();const run=t=>{const v=Math.min(1,(t-start)/1400);el.textContent=String(Math.round(target*(1-(1-v)**3)));if(v<1&&!reduced)requestAnimationFrame(run);else el.textContent=target};requestAnimationFrame(run);countObserver.unobserve(el)}),{threshold:.5});$$('[data-counter]').forEach(el=>countObserver.observe(el));
+function onScroll(){const denom=document.documentElement.scrollHeight-innerHeight;$('#page-progress').style.width=`${denom>0?Math.min(100,100*scrollY/denom):0}%`;$('#header').classList.toggle('scrolled',scrollY>25);if(!reduced){const s=$('#shoe-stage');if(s&&scrollY<innerHeight*1.25)s.style.translate=`0 ${Math.min(160,scrollY*.16)}px`}}window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+// WebGL2 shader: hardware-accelerated atmospheric field. All non-WebGL UI is independent.
+function startShader(){const canvas=$('#hero-gl');if(!canvas||reduced)return;let gl;try{gl=canvas.getContext('webgl2',{antialias:false,alpha:true,powerPreference:'low-power'})}catch{}if(!gl)return;
+ const vertex=`#version 300 es\nprecision highp float;out vec2 vUv;void main(){vec2 p=vec2((gl_VertexID==1)?3.0:-1.0,(gl_VertexID==2)?3.0:-1.0);vUv=p*.5+.5;gl_Position=vec4(p,0.0,1.0);}`;
+ const fragment=`#version 300 es\nprecision highp float;in vec2 vUv;out vec4 fragColor;uniform float uTime;uniform vec2 uRes;uniform vec2 uMouse;float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}void main(){vec2 uv=vUv;vec2 p=(uv-.5)*vec2(uRes.x/uRes.y,1.0);float t=uTime*.08;float n=noise(p*2.2+vec2(t,-t*.45));float ray=exp(-abs(p.y-(p.x*.32)-.07)*18.0)*(0.25+.4*n);float halo=exp(-length((p-vec2(.16,-.03))*vec2(.75,1.8))*4.2)*(.28+.11*sin(uTime*.7));vec3 col=vec3(.93,.26,.065)*(ray*.42+halo*.35);vec2 grid=uv*vec2(96.,55.);float h=hash(floor(grid));vec2 f=fract(grid)-.5;float particle=smoothstep(.055,.0,length(f))*step(.985,h)*(.5+.5*sin(uTime*(.6+h)+h*20.));col+=vec3(.8,.84,.9)*particle*.6;float sweep=exp(-abs(p.x*1.2+p.y*.5-sin(uTime*.1)*.42)*26.)*.05;col+=vec3(1.,.33,.14)*sweep;fragColor=vec4(col,clamp(dot(col,vec3(.333))*2.0,0.0,.85));}`;
+ function shader(src,type){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
+ let program;try{program=gl.createProgram();gl.attachShader(program,shader(vertex,gl.VERTEX_SHADER));gl.attachShader(program,shader(fragment,gl.FRAGMENT_SHADER));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program))}catch(e){console.warn('STRYDE WebGL effect unavailable:',e);return}gl.useProgram(program);const res=gl.getUniformLocation(program,'uRes'),time=gl.getUniformLocation(program,'uTime'),mouse=gl.getUniformLocation(program,'uMouse');let visible=true,frame=0,raf;
+ const visibility=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible&&!raf)raf=requestAnimationFrame(draw)},{threshold:.01});visibility.observe(canvas);
+ function resize(){const dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(canvas.clientWidth*dpr);canvas.height=Math.round(canvas.clientHeight*dpr);gl.viewport(0,0,canvas.width,canvas.height)}
+ function draw(t){raf=0;if(!visible||document.hidden)return;if(frame++%2===0){const w=canvas.clientWidth;const h=canvas.clientHeight;if(canvas.width!==Math.round(w*Math.min(devicePixelRatio||1,1.5)))resize();gl.uniform2f(res,canvas.width,canvas.height);gl.uniform1f(time,t*.001);gl.uniform2f(mouse,0,0);gl.drawArrays(gl.TRIANGLES,0,3)}raf=requestAnimationFrame(draw)}
+ window.addEventListener('resize',resize,{passive:true});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!raf)raf=requestAnimationFrame(draw)});resize();raf=requestAnimationFrame(draw);
+}
+startShader();
+// Animate nav elements with GSAP, but no vital functionality depends on a CDN.
+window.addEventListener('load',()=>{if(reduced||!window.gsap)return;try{gsap.from('.hero-copy > *',{opacity:0,y:38,duration:1.05,stagger:.12,ease:'power3.out',clearProps:'all'});gsap.from('.hero-spec',{opacity:0,x:25,duration:1,delay:.6,clearProps:'all'})}catch(e){console.warn('Optional motion layer skipped',e)}});
+})();
