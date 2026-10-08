@@ -69,7 +69,7 @@ $$('#size-grid button').forEach(b=>b.addEventListener('click',()=>{selectedSize=
 $$('#finish-options button').forEach(b=>b.addEventListener('click',()=>{selectedFinish=b.dataset.finish;updateCustomizer()}));
 $('#custom-add').addEventListener('click',()=>{if(addToCart('aerodyne',selectedSize,selectedColor,selectedFinish,{upper:selectedUpper,laces:selectedLaces,sole:selectedSole}))openDialog('#cart-drawer')});
 $('#view-3d').addEventListener('click',()=>{openDialog('#model-overlay');window.StrydeDesignView.open(selectedColor)});
-$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>window.StrydeDesignView.setColor(b.dataset.modelColor)));
+$$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>{window.StrydeDesignView.setColor(b.dataset.modelColor)}));
 $('#model-reset').addEventListener('click',()=>window.StrydeDesignView.reset());
 $('#reset-view').addEventListener('click',()=>{window.StrydeGLB?.reset('studio');const img=$('#custom-image');img.style.transform='rotate(-10deg)';toast('VIEW RESET')});
 $('#save-design').addEventListener('click',()=>{try{localStorage.setItem('stryde-design-v2',JSON.stringify({accent:selectedColor,upper:selectedUpper,laces:selectedLaces,sole:selectedSole,finish:selectedFinish}));toast('DESIGN SAVED IN THIS BROWSER')}catch{toast('BROWSER STORAGE UNAVAILABLE')}});

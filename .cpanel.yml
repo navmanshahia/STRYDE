@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - /bin/mkdir -p "$HOME/public_html/STRYDE" "$HOME/public_html/STRYDE/images" "$HOME/public_html/STRYDE/models" "$HOME/public_html/STRYDE/assets"
+    - /bin/cp -f index.html styles.css app.js 3d-viewer.js glb-engine.js design-view.js experience-v3.js experience-v3.css v4.js v4.css v5.js v5.css "$HOME/public_html/STRYDE/"
+    - /bin/cp -f images/* "$HOME/public_html/STRYDE/images/"
+    - /bin/cp -f models/*.glb "$HOME/public_html/STRYDE/models/"
+    - /bin/cp -f assets/* "$HOME/public_html/STRYDE/assets/"
