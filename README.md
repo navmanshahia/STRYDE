@@ -75,3 +75,6 @@ This remains a **frontend-only portfolio concept**, not a real checkout or engin
 - Mobile WebGL context creation uses low-power settings, antialiasing off, and DPR capped to 0.85; automatic continuous GLB rendering and animations are paused. The image fallback stays visible if WebGL is unavailable.
 - Hero background shader is disabled in mobile safe mode, particle simulation starts paused, and lab visuals draw statically until interacted with. The storefront, product cards, cart and material selectors still work.
 - Desktop stays in fully animated mode. The Safari crash shown by the user suggests GPU/memory pressure, but remote iOS crash logs are needed to verify the cause.
+
+## V3.2 — Model fidelity correction
+The main interactive sneaker viewer now opens the **original photorealistic STRYDE concept artwork**, with pointer/touch tilt, zoom, and color-accent previews. This is a design-matched 2.5D artwork experience rather than a 360° scan. The early segmented GLB is separately labeled **3D Prototype** because its geometry does not precisely match the original product design. Expensive WebGL scenes are opt-in on all devices. A genuine design-identical 360° GLB requires separate professional 3D modeling or multi-view reconstruction.

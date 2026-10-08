@@ -143,3 +143,39 @@ html{scroll-padding-top:76px}
 .performance-lite .showroom-viewport:not(.glb-loaded) .showroom-glb,.performance-lite .custom-preview:not(.glb-loaded) .studio-live{display:none}
 .performance-lite .model-overlay:not([aria-hidden="false"]) canvas{visibility:hidden}
 @media(max-width:650px){.performance-lite .enable-3d{bottom:56px;padding:10px 12px;font-size:9px}.performance-lite .studio-3d-trigger{bottom:62px}.performance-lite .hero,.performance-lite .showroom-viewport{isolation:auto}}
+
+/* STRYDE V3.2 — original concept art as the primary interactive experience */
+.model-overlay{background:radial-gradient(ellipse at 50% 48%,#202930,#090b0f 72%);--design-glow:#ff6938}
+.model-overlay .model-top{z-index:18;right:80px}
+.model-view-switch{position:absolute;z-index:19;top:91px;left:5%;display:flex;gap:8px}
+.model-view-switch button{color:#b4bec4;background:#10151a;border:1px solid #ffffff40;padding:13px 17px;font:700 10px 'DM Sans',sans-serif;letter-spacing:.12em;cursor:pointer}
+.model-view-switch button.active{background:#f4f4ef;color:#11171c;border-color:#f4f4ef}
+.design-shoe-stage{position:absolute;z-index:4;inset:8% 8% 6% 12%;display:grid;place-items:center;perspective:1300px;touch-action:none;user-select:none;cursor:grab;isolation:isolate}
+.design-shoe-stage:active{cursor:grabbing}
+.design-energy-halo{position:absolute;width:75%;height:60%;border-radius:50%;background:radial-gradient(ellipse,var(--design-glow),transparent 67%);opacity:.18;filter:blur(70px);pointer-events:none}
+.design-orbit-ring{position:absolute;width:75%;height:53%;border-radius:50%;border:1px solid #ffffff26;transform:rotate(-20deg) rotateX(69deg);pointer-events:none}
+#design-shoe-art{display:block;width:100%;height:100%;object-fit:contain;filter:var(--design-filter,none) drop-shadow(0px 30px 40px #000a);transform:perspective(1300px) rotateX(var(--shoe-tilt-x,0deg)) rotateY(var(--shoe-tilt-y,0deg)) scale(var(--shoe-scale,1));transform-origin:center;transition:transform .17s ease,filter .2s ease;pointer-events:none;will-change:transform}
+.design-annotation{position:absolute;pointer-events:none;color:#cdd2d5;font:700 9px 'DM Sans',sans-serif;letter-spacing:.16em;text-shadow:0 2px 12px #000}.annotation-heel{left:3%;top:29%}.annotation-knit{right:4%;top:22%}
+.model-overlay.design-active #model-canvas{visibility:hidden;pointer-events:none}
+.model-overlay:not(.design-active) #model-canvas{visibility:visible;pointer-events:auto}
+.model-overlay:not(.design-active) .design-shoe-stage{visibility:hidden;pointer-events:none}
+.model-overlay .model-guide{bottom:13%;z-index:8;pointer-events:none}
+.model-overlay .model-guide h2{font-size:clamp(40px,5.7vw,79px);line-height:.94;margin:14px 0}
+.model-overlay .model-controls{bottom:7%;z-index:12}
+.model-overlay .design-truth{position:absolute;bottom:2%;left:5%;right:5%;text-align:center;color:#89939b;font:700 8px 'DM Sans',sans-serif;letter-spacing:.1em;pointer-events:none}
+@media(max-width:650px){
+.model-overlay .model-top{top:28px;left:5%;right:22%;font-size:7px;line-height:1.45;letter-spacing:.11em;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.model-overlay .model-close{top:22px;right:5%}
+.model-view-switch{top:91px;left:5%;right:5%}.model-view-switch button{flex:1;font-size:8px;padding:11px 8px;letter-spacing:.06em}
+.design-shoe-stage{top:16%;bottom:37%;left:0;right:0}
+#design-shoe-art{width:100%;max-width:100%;height:100%}
+.design-annotation{font-size:7px}.annotation-heel{top:8%;left:5%}.annotation-knit{top:16%;right:4%}
+.model-overlay .model-guide{bottom:19%;left:5%;width:90%;max-width:90%}
+.model-overlay .model-guide>span{font-size:8px}
+.model-overlay .model-guide h2{font-size:clamp(35px,11vw,52px);margin:6px 0}
+.model-overlay .model-guide p{font-size:11px;line-height:1.42;max-width:100%;margin:4px 0}
+.model-overlay .model-controls{bottom:8%;left:5%;right:5%;gap:11px}
+.model-overlay .design-truth{font-size:7px;bottom:2%;letter-spacing:.02em}
+.model-overlay:not(.design-active) #model-canvas{top:15%;height:48%;bottom:auto}
+}
+@media(prefers-reduced-motion:reduce){#design-shoe-art{transition:none}}

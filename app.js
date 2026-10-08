@@ -38,7 +38,7 @@ function renderCart(){const count=cart.reduce((n,i)=>n+i.qty,0);$('#cart-count')
  $('#subtotal').textContent=money(cart.reduce((n,i)=>n+(PRODUCTS.find(p=>p.id===i.id)?.price||0)*i.qty,0));
 }
 function openDialog(selector){if(activeDialog)closeDialog();const node=$(selector);previousFocus=document.activeElement;activeDialog=node;$('#scrim').hidden=false;node.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>{const initial=node.querySelector('input, [data-close], button');(initial||node).focus({preventScroll:true})},80)}
-function closeDialog(){if(!activeDialog)return;const node=activeDialog;activeDialog=null;node.setAttribute('aria-hidden','true');$('#scrim').hidden=true;document.body.style.overflow='';clearTimeout(filmTimeout);if(node.id==='model-overlay')window.Stryde3D?.stop();if(previousFocus?.focus)previousFocus.focus({preventScroll:true})}
+function closeDialog(){if(!activeDialog)return;const node=activeDialog;activeDialog=null;node.setAttribute('aria-hidden','true');$('#scrim').hidden=true;document.body.style.overflow='';clearTimeout(filmTimeout);if(node.id==='model-overlay'){window.Stryde3D?.stop();window.StrydeDesignView?.resetOnClose?.();}if(previousFocus?.focus)previousFocus.focus({preventScroll:true})}
 $$('[data-close]').forEach(b=>b.addEventListener('click',closeDialog));$('#scrim').addEventListener('click',closeDialog);
 document.addEventListener('keydown',e=>{if(!activeDialog)return;if(e.key==='Escape'){closeDialog();return}if(e.key==='Tab'){const focusable=$$('button:not([disabled]),a[href],input:not([disabled]),[tabindex]:not([tabindex="-1"])',activeDialog).filter(el=>el.offsetWidth||el.offsetHeight);if(!focusable.length)return;const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 $('#open-cart').addEventListener('click',()=>{renderCart();openDialog('#cart-drawer')});
@@ -68,9 +68,9 @@ $$('#color-swatches button').forEach(b=>b.addEventListener('click',()=>{selected
 $$('#size-grid button').forEach(b=>b.addEventListener('click',()=>{selectedSize=b.dataset.size;updateCustomizer()}));
 $$('#finish-options button').forEach(b=>b.addEventListener('click',()=>{selectedFinish=b.dataset.finish;updateCustomizer()}));
 $('#custom-add').addEventListener('click',()=>{if(addToCart('aerodyne',selectedSize,selectedColor,selectedFinish,{upper:selectedUpper,laces:selectedLaces,sole:selectedSole}))openDialog('#cart-drawer')});
-$('#view-3d').addEventListener('click',()=>{openDialog('#model-overlay');$$('[data-model-color]').forEach(b=>b.classList.toggle('active',b.dataset.modelColor===selectedColor));window.Stryde3D?.start($('#model-canvas'),selectedColor)});
-$$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>{$$('[data-model-color]').forEach(x=>x.classList.toggle('active',x===b));window.Stryde3D?.setColor(b.dataset.modelColor)}));
-$('#model-reset').addEventListener('click',()=>window.Stryde3D?.reset());
+$('#view-3d').addEventListener('click',()=>{openDialog('#model-overlay');window.StrydeDesignView.open(selectedColor)});
+$('[data-model-color]').forEach(b=>b.addEventListener('click',()=>window.StrydeDesignView.setColor(b.dataset.modelColor)));
+$('#model-reset').addEventListener('click',()=>window.StrydeDesignView.reset());
 $('#reset-view').addEventListener('click',()=>{window.StrydeGLB?.reset('studio');const img=$('#custom-image');img.style.transform='rotate(-10deg)';toast('VIEW RESET')});
 $('#save-design').addEventListener('click',()=>{try{localStorage.setItem('stryde-design-v2',JSON.stringify({accent:selectedColor,upper:selectedUpper,laces:selectedLaces,sole:selectedSole,finish:selectedFinish}));toast('DESIGN SAVED IN THIS BROWSER')}catch{toast('BROWSER STORAGE UNAVAILABLE')}});
 $('#share-design').addEventListener('click',async()=>{const url=new URL(location.href);for(const [k,v] of Object.entries({accent:selectedColor,upper:selectedUpper,laces:selectedLaces,sole:selectedSole,finish:selectedFinish}))url.searchParams.set(k,v);try{await navigator.clipboard.writeText(url.toString());toast('CUSTOM DESIGN LINK COPIED')}catch{window.prompt('Copy your design link:',url.toString())}});

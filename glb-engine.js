@@ -62,7 +62,7 @@ async function loadGLB(){if(glbPromise)return glbPromise;glbPromise=(async()=>{
 })().catch(e=>{glbPromise=null;throw e});return glbPromise}
 const all=new Map();let spin=0,scrollListening=false,manualTech=false,focusGroup='all';
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const lite=Boolean(window.STRYDE_LOW_POWER);let liteActiveMode=null;
+const lite=true; // webGL technical prototypes activate only when requested, preserving the faithful art as defaultlet liteActiveMode=null;
 function compile(gl,t,code){const s=gl.createShader(t);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
 function makeProgram(gl){const p=gl.createProgram();gl.attachShader(p,compile(gl,gl.VERTEX_SHADER,programVS));gl.attachShader(p,compile(gl,gl.FRAGMENT_SHADER,programFS));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));return p}
 function partOffset(name){if(/outsole|tread/i.test(name))return [0,-.78,0];if(/midsole|air_unit/i.test(name))return [0,-.32,0];if(/lace|tongue/i.test(name))return [0,.54,.0];if(/liner/i.test(name))return [0,.45,0];if(/cage|stitch|detail|perf|accent/i.test(name))return [0,.25,0];return [0,.18,0]}
@@ -126,7 +126,7 @@ async function create(canvas,mode){if(!canvas)return;
  if(lite)updateButtons();return view}
 function updateButtons(){document.querySelectorAll('[data-activate-3d]').forEach(button=>{
  const active=button.dataset.activate3d===liteActiveMode&&Boolean(all.get(liteActiveMode)?.ready);
- button.innerHTML=active?'◉ 3D ACTIVE <span>↗</span>':'◈ ACTIVATE 3D VIEW <span>↗</span>';
+ button.innerHTML=active?'◉ 3D ACTIVE <span>↗</span>':'◈ VIEW 3D PROTOTYPE <span>↗</span>';
  button.setAttribute('aria-pressed',String(active));});}
 function releaseMode(mode){const view=all.get(mode);if(view){view.dispose();all.delete(mode)}if(lite&&liteActiveMode===mode)liteActiveMode=null;if(lite)updateButtons()}
 function setStyle(options){Object.keys(style).forEach(k=>{if(options[k]!==undefined)style[k]=options[k]});for(const view of all.values())view.schedule()}
