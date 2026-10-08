@@ -49,3 +49,83 @@
 .design-actions button:hover{background:#fff;color:#111}
 @media(max-width:650px){.shoe-scene .live-shoe{left:-2%;top:5%;width:104%;height:90%}.custom-preview .studio-live{inset:-7%;width:114%;height:114%}.material-row>span{font-size:8px}.tech-live{inset:1%;width:98%;height:98%}}
 @media(prefers-reduced-motion:reduce){.shoe-scene .live-shoe,.custom-preview .studio-live,.tech-live{transition:none}}
+
+/* STRYDE V3 — Immersive exhibition, motion lab and kinetic detail */
+html{scroll-padding-top:76px}
+#physics-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:.83}
+.hero-copy,.hero-spec,.hero-bottom{z-index:5}
+.physics-controls{position:absolute;z-index:5;left:5%;bottom:12%;display:flex;gap:17px;align-items:center;color:#859098;font-size:9px;font-weight:700;letter-spacing:.13em}
+.physics-controls button{background:#161b20bc;border:1px solid #ffffff40;padding:11px 13px;color:#fff;font-size:9px;letter-spacing:.12em;cursor:pointer}
+.physics-controls button:hover{border-color:#ff6938;color:#ff6938}.physics-controls button[aria-pressed=false]{opacity:.6}
+.showroom{background:#090c10;overflow:hidden;position:relative}
+.showroom-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.showroom-status{font-size:10px;letter-spacing:.15em;font-weight:700;color:#a0a7af}
+.showroom-status i,.lab-record i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff6938;box-shadow:0 0 15px #ff6938;margin-right:7px}
+.showroom-shell{display:grid;grid-template-columns:minmax(0,1.48fr) minmax(290px,.72fr);min-height:630px;border:1px solid #ffffff28;background:#10161b;overflow:hidden}
+.showroom-viewport{position:relative;isolation:isolate;min-height:625px;overflow:hidden;--showroom-tint:#ff6938;background:radial-gradient(ellipse at 48% 68%,#283039 0%,#101820 42%,#090c11 80%)}
+.showroom-viewport:before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--showroom-tint),transparent 80%),transparent 46%);opacity:.6}
+.showroom-arches{position:absolute;inset:0;perspective:950px;opacity:.3;pointer-events:none}
+.showroom-arches i{display:block;position:absolute;inset:3% 8% 17%;border:1px solid #e2eef736;transform:rotateX(-10deg)}
+.showroom-arches i:nth-child(2){inset:12% 18% 22%}.showroom-arches i:nth-child(3){inset:21% 28% 26%}
+.showroom-floor{position:absolute;bottom:-37%;left:-30%;height:78%;width:160%;transform:perspective(600px) rotateX(68deg);background-image:linear-gradient(#c5d4e21b 1px,transparent 1px),linear-gradient(90deg,#c5d4e21b 1px,transparent 1px);background-size:65px 65px;mask-image:linear-gradient(transparent,#000 45%,transparent);pointer-events:none}
+.showroom-horizon{position:absolute;left:0;right:0;top:67%;height:1px;background:linear-gradient(90deg,transparent,#fff3,transparent)}
+.showroom-ambient{position:absolute;inset:15% 5% 10%;background:radial-gradient(ellipse at 50% 75%,var(--showroom-tint),transparent 40%);filter:blur(60px);opacity:.42;pointer-events:none}
+.showroom-glb{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:5;cursor:grab;touch-action:pan-y;transition:opacity .6s}
+.showroom-glb:active{cursor:grabbing;touch-action:none}
+.showroom-viewport.glb-loaded .showroom-glb{opacity:1}
+.showroom-fallback{position:absolute;width:95%;top:18%;left:2%;z-index:2;pointer-events:none;filter:drop-shadow(0 30px 40px #000);transform:rotate(-10deg);animation:stryde-bob 6s ease-in-out infinite}
+.showroom-viewport.glb-loaded .showroom-fallback{opacity:0}
+.showroom-podium{position:absolute;bottom:11%;left:22%;width:56%;height:12%;border-radius:50%;border:1px solid #ffffff31;box-shadow:0 0 65px var(--showroom-tint);opacity:.22;pointer-events:none}
+.showroom-view-label{position:absolute;top:25px;left:25px;z-index:6;color:#fff;display:flex;flex-direction:column;gap:10px;font-size:10px;letter-spacing:.13em;font-weight:700;pointer-events:none}
+.showroom-view-label span{color:#9aa3af;font-size:9px}
+.showroom-view-controls{position:absolute;z-index:8;bottom:22px;left:20px;right:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.showroom-view-controls button{min-height:43px;padding:8px;border:1px solid #ffffff35;background:#0b0f13e0;color:#c4cdd2;font-size:9px;letter-spacing:.08em;cursor:pointer}
+.showroom-view-controls button:hover,.showroom-view-controls button.active{background:#fff;border-color:#fff;color:#0c1117}
+.showroom-info{display:flex;flex-direction:column;min-width:0;padding:34px;background:linear-gradient(160deg,#12181e,#080a0e);border-left:1px solid #ffffff25}
+.showroom-info-top{display:flex;justify-content:space-between;gap:10px;font-size:9px;font-weight:700;color:#99a4af;letter-spacing:.13em}
+.showroom-info h2{font:700 clamp(52px,5.8vw,96px)/.94 'Space Grotesk',sans-serif;letter-spacing:-.08em;margin:45px 0 20px;white-space:nowrap}
+.showroom-info h2 em{font-style:normal;color:#ff6938}
+.showroom-info>p{font-size:13px;color:#a5aeb4;line-height:1.7;max-width:270px}
+.showroom-lineup{margin:32px 0 30px;border-top:1px solid #ffffff30}
+.showroom-lineup button{display:flex;gap:12px;align-items:center;width:100%;min-height:60px;background:transparent;border:0;border-bottom:1px solid #ffffff23;color:#a6b0b8;text-align:left;font-size:10px;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:background .25s,padding-left .25s}
+.showroom-lineup button span:nth-child(2){flex:1}
+.showroom-lineup button:hover,.showroom-lineup button.active{color:#fff;background:#ffffff10;padding-left:10px}
+.showroom-color{height:13px;width:13px;background:var(--tone);box-shadow:0 0 20px var(--tone);border-radius:50%;flex-shrink:0}
+.showroom-build{margin-top:auto;min-height:58px;display:flex;justify-content:space-between;align-items:center}
+.showroom-info>small{font-size:8px;color:#727d84;letter-spacing:.15em;margin-top:17px}
+.lab-shell{margin:65px 5% 48px;border:1px solid #ffffff25;background:#0b1014}
+.lab-header{display:flex;justify-content:space-between;gap:20px;padding:32px;background:linear-gradient(90deg,#161b21,#0c1014);border-bottom:1px solid #ffffff20}
+.lab-header h3{font:700 clamp(37px,4vw,67px)/1 'Space Grotesk',sans-serif;letter-spacing:-.06em;margin:15px 0}
+.lab-header h3 em{font-style:normal;color:#ff6938}.lab-header p{max-width:640px;font-size:12px;line-height:1.6;color:#a6b0b8}
+.lab-mark{font-size:10px;letter-spacing:.12em;color:#839098}
+.lab-body{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:450px}
+.lab-menu{display:flex;flex-direction:column;border-right:1px solid #ffffff26}
+.lab-menu button{display:flex;flex-direction:column;gap:12px;text-align:left;background:transparent;color:#b3bec5;border:0;border-bottom:1px solid #ffffff25;padding:30px 25px;cursor:pointer;transition:background .25s}
+.lab-menu button.active,.lab-menu button:hover{background:#1e272e;color:#fff}.lab-menu button.active{box-shadow:inset 3px 0 #ff6938}
+.lab-menu button span{font-size:10px;font-weight:700;color:#ff6938}.lab-menu button strong{font:700 18px 'Space Grotesk',sans-serif}
+.lab-menu button small{font-size:10px;letter-spacing:.08em}
+.lab-stage{position:relative;min-height:460px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#283038,#0b0e12 78%)}
+.lab-stage:before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,#000,transparent)}
+.lab-stage-top{position:absolute;top:21px;left:24px;right:24px;z-index:3;display:flex;justify-content:space-between;gap:10px;font-size:10px;font-weight:700;letter-spacing:.1em;color:#d7dfe4}
+.lab-record{font-size:9px;color:#a5adb4}#lab-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lab-metric{position:absolute;right:24px;top:90px;z-index:2;text-align:right;display:flex;flex-direction:column;gap:10px}
+.lab-metric span{font-size:9px;color:#b0b9c1;letter-spacing:.1em}.lab-metric strong{font:700 42px 'Space Grotesk',sans-serif}
+.lab-adjust{position:absolute;z-index:3;bottom:58px;left:24px;right:24px;display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:16px;padding:20px;background:#121a20e6;border:1px solid #ffffff2a}
+.lab-adjust label{font-size:9px;font-weight:700;letter-spacing:.12em}.lab-adjust input{accent-color:#ff6938;width:100%}
+.lab-adjust button{padding:12px;border:1px solid #ffffff50;background:#ffffff10;color:#fff;font-size:9px;font-weight:700;cursor:pointer}.lab-adjust button:hover{background:#fff;color:#111}
+.lab-footer{position:absolute;bottom:17px;left:24px;right:24px;display:flex;justify-content:space-between;font-size:8px;letter-spacing:.13em;color:#687580}
+.scene-transition{position:fixed;inset:0;z-index:500;pointer-events:none;visibility:hidden}
+.scene-transition-slab{position:absolute;inset:0;background:#ff6938;transform:translateY(110%);transition:transform .42s cubic-bezier(.76,0,.24,1)}
+.scene-transition-copy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center;color:#111;opacity:0;transition:opacity .2s}
+.scene-transition-copy span{font-size:10px;letter-spacing:.22em}.scene-transition-copy strong{font:700 clamp(48px,9vw,145px) 'Space Grotesk',sans-serif;letter-spacing:-.08em}
+.scene-transition.is-entering,.scene-transition.is-leaving{visibility:visible}
+.scene-transition.is-entering .scene-transition-slab,.scene-transition.is-leaving .scene-transition-slab{transform:translateY(0)}
+.scene-transition.is-entering .scene-transition-copy{opacity:1}
+.scene-transition.is-leaving .scene-transition-copy{opacity:0}
+.scene-transition.is-leaving .scene-transition-slab{transform:translateY(-110%)}
+.cursor-halo{position:fixed;width:370px;height:370px;z-index:100;opacity:0;pointer-events:none;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#ff70460f,transparent 65%);mix-blend-mode:screen}
+@keyframes stryde-bob{50%{transform:translateY(-12px) rotate(-11deg)}}
+@media(hover:hover) and (pointer:fine){.cursor-halo{opacity:1}.product-card,.editorial-card{--mx:50%;--my:50%}.product-card:before,.editorial-card:before{content:'';position:absolute;z-index:8;inset:0;pointer-events:none;background:radial-gradient(200px circle at var(--mx) var(--my),#ff704619,transparent 80%);opacity:0;transition:opacity .3s}.product-card:hover:before,.editorial-card:hover:before{opacity:1}}
+@media(max-width:850px){.showroom-shell{grid-template-columns:1fr}.showroom-viewport{min-height:500px}.showroom-info{border-left:0;border-top:1px solid #ffffff25}.showroom-info h2{font-size:70px;margin:28px 0}.showroom-info>p{max-width:500px}.showroom-lineup{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.showroom-build{margin-top:15px}.lab-body{grid-template-columns:1fr}.lab-menu{flex-direction:row;border-right:0;border-bottom:1px solid #ffffff25}.lab-menu button{padding:22px 13px;flex:1}.lab-menu button strong{font-size:14px}.lab-menu button small{font-size:9px}}
+@media(max-width:650px){.physics-controls{left:6%;bottom:17%;max-width:180px}.physics-controls span{display:none}.physics-controls button{font-size:8px;padding:8px}.showroom{padding:70px 5%}.showroom-status{display:none}.showroom-viewport{min-height:420px}.showroom-glb{top:5%;height:85%}.showroom-fallback{width:130%;left:-15%;top:20%}.showroom-view-label{font-size:8px;top:17px;left:13px}.showroom-view-controls{left:10px;right:10px;bottom:10px;gap:4px}.showroom-view-controls button{font-size:7px;min-height:38px;padding:5px}.showroom-info{padding:26px 20px}.showroom-info-top{font-size:8px}.showroom-info h2{font-size:clamp(52px,14vw,78px)}.showroom-lineup{grid-template-columns:1fr;margin:25px 0}.showroom-lineup button{min-height:52px}.lab-shell{margin:35px 5%}.lab-header{padding:25px 18px}.lab-header h3{font-size:36px}.lab-mark{display:none}.lab-menu button{padding:17px 10px}.lab-menu button strong{font-size:11px}.lab-menu button small{display:none}.lab-stage{min-height:405px}.lab-stage-top{left:14px;right:14px;top:16px;font-size:9px}.lab-record{font-size:7px}.lab-metric{right:18px;top:67px}.lab-metric strong{font-size:29px}.lab-adjust{grid-template-columns:1fr auto;left:12px;right:12px;bottom:43px;padding:12px;gap:8px}.lab-adjust label{grid-column:1/-1}.lab-adjust button{font-size:7px;padding:9px}.lab-footer{left:12px;right:12px;bottom:12px;font-size:7px}.lab-footer span{display:none}}
+@media(prefers-reduced-motion:reduce){#physics-canvas,.cursor-halo{display:none}.showroom-fallback{animation:none}.scene-transition{display:none}}

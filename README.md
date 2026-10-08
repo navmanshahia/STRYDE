@@ -46,3 +46,23 @@ Custom sizes and product selections work. Add to Bag and the cart operate locall
 - Scroll and camera choreography has a native animation fallback and enhances via GSAP ScrollTrigger when loaded. Reduced-motion preference disables automatic motion.
 - Production commerce and newsletter sending are intentionally **not** connected. This is still a portfolio frontend demonstration.
 - Host as static files with `index.html`, `models/` and source assets in the same directory. A local `python3 -m http.server 8080` is recommended over `file://` because the GLB is fetched.
+
+## STRYDE V3 — Immersive motion lab and showroom
+
+This remains a **frontend-only portfolio concept**, not a real checkout or engineering specification.
+
+### New features
+- A responsive 3D showroom (#showroom) lazily loads the same authored GLB and lets visitors select four concept colorways, orbit/zoom and four camera presets. All material changes synchronize with the main Custom Lab. The models are not four separate product scans; they are variations of the original AERODYNE ONE silhouette.
+- The WebGL2 technology GLB adds per-component highlight modes (upper, cushioning, traction), scroll-synchronized part separation and manual explode/reassemble controls.
+- Real-time hero kinetics are rendered on Canvas2D with spring attraction, simulated gravity, collisions and pointer repulsion. This is **2D interactive particle physics behind the 3D model**, not rigid-body simulation of 3D rocks.
+- Interactive engineering field-notes visualize cushioning, airflow and traction. Their values are user-controlled **illustrations**, not measured performance claims.
+- Animated in-page scene transitions, magnetic buttons, cursor lighting and product-card spotlight micro-interactions progressively enhance the base layout.
+- Reduced-motion support disables continuous motion, and fallback artwork remains when WebGL2 or GLB fetching is unavailable.
+
+### Code and hosting
+- `experience-v3.js` owns the hero physics, showroom selector/cameras, illustration lab, transitions and micro-interactions.
+- `glb-engine.js` owns the model, camera presets, mesh highlighting and part separation.
+- `styles.css` includes the STRYDE V3 layouts and responsive overrides.
+- The frontend interactions were checked at desktop and mobile viewport sizes. The complete downloadable development archive also includes a browser interaction test script.
+- Use any static server (including cPanel) that serves `.glb` as `model/gltf-binary` or `application/octet-stream`, preserves the `models/` directory, and supports same-origin fetch. The visual fallback loads even if GLB fails.
+- Real accounts, checkout, orders, inventory, email delivery and server payments are still intentionally **not connected**.

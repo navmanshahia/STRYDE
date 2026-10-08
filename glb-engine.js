@@ -60,7 +60,7 @@ async function loadGLB(){if(glbPromise)return glbPromise;glbPromise=(async()=>{
  let offset=12,json,binary;while(offset<bin.byteLength){const len=view.getUint32(offset,true),kind=view.getUint32(offset+4,true);offset+=8;const chunk=bin.slice(offset,offset+len);offset+=len;if(kind===0x4e4f534a)json=JSON.parse(new TextDecoder().decode(chunk));if(kind===0x004e4942)binary=chunk}
  if(!json||!binary)throw Error('Missing GLB mesh buffers');return {json,binary};
 })().catch(e=>{glbPromise=null;throw e});return glbPromise}
-const all=new Map();let spin=0,scrollListening=false;
+const all=new Map();let spin=0,scrollListening=false,manualTech=false,focusGroup='all';
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function compile(gl,t,code){const s=gl.createShader(t);gl.shaderSource(s,code);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}
 function makeProgram(gl){const p=gl.createProgram();gl.attachShader(p,compile(gl,gl.VERTEX_SHADER,programVS));gl.attachShader(p,compile(gl,gl.FRAGMENT_SHADER,programFS));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));return p}
@@ -78,7 +78,7 @@ function activeMaterial(name,original){let base=original.pbrMetallicRoughness?.b
  return {base,emissive,metallic,rough}
 }
 class Viewer{
- constructor(canvas,mode){this.canvas=canvas;this.mode=mode;this.ready=false;this.dead=false;this.active=true;this.yaw=mode==='hero'?.48:mode==='tech'?.22:.36;this.pitch=mode==='hero'?-.16:-.15;this.zoom=0;this.ty=this.yaw;this.tp=this.pitch;this.tz=0;this.explode=0;this.explodeTarget=0;this.scroll=0;this.pointerDown=false;this.raf=0;this.drawn=0;
+ constructor(canvas,mode){this.canvas=canvas;this.mode=mode;this.ready=false;this.dead=false;this.active=true;this.yaw=mode==='hero'?.48:mode==='tech'?.22:mode==='showroom'?.65:.36;this.pitch=mode==='hero'?-.16:-.15;this.zoom=0;this.ty=this.yaw;this.tp=this.pitch;this.tz=0;this.explode=0;this.explodeTarget=0;this.scroll=0;this.lastPointer={x:0,y:0};this.pointerDown=false;this.raf=0;this.drawn=0;
    this.onDown=e=>{this.pointerDown=true;this.startX=e.clientX;this.startY=e.clientY;canvas.setPointerCapture(e.pointerId)};
    this.onMove=e=>{if(!this.pointerDown)return;this.ty+=(e.clientX-this.startX)*.008;this.tp=clamp(this.tp+(e.clientY-this.startY)*.006,-.9,.65);this.startX=e.clientX;this.startY=e.clientY;this.schedule()};
    this.onUp=()=>{this.pointerDown=false};this.onWheel=e=>{e.preventDefault();this.tz=clamp(this.tz+Math.sign(e.deltaY)*.45,-2.7,5);this.schedule()};
@@ -102,9 +102,9 @@ class Viewer{
    const smooth=reduced?1:.095;this.yaw+=(this.ty-this.yaw)*smooth;this.pitch+=(this.tp-this.pitch)*smooth;this.zoom+=(this.tz-this.zoom)*smooth;this.explode+=(this.explodeTarget-this.explode)*(reduced?1:.09);
    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(this.program);
    const U=this.uniform,un1=(k,v)=>gl.uniform1f(U[k],v);un1('uYaw',this.yaw);un1('uPitch',this.pitch);un1('uZoom',this.zoom);un1('uAspect',w/h);
-   un1('uScale',this.mode==='hero'?1.15:this.mode==='tech'?1.10:this.mode==='overlay'?1.22:1.02);
+   un1('uScale',this.mode==='hero'?1.15:this.mode==='tech'?1.10:this.mode==='overlay'?1.22:this.mode==='showroom'?1.35:1.02);
    un1('uHover',reduced?0:Math.sin(t*.0011)*.045);un1('uExplode',this.explode);un1('uTime',t*.001);
-   for(const part of this.drawables){const m=activeMaterial(part.name,part.material);gl.uniform3fv(U.uBase,m.base);gl.uniform3fv(U.uEmissive,m.emissive);un1('uMetal',m.metallic);un1('uRough',m.rough);un1('uKnit',part.name==='Upper_Knit'?1:0);gl.uniform3fv(U.uPartOffset,part.offset);gl.bindVertexArray(part.vao);gl.drawElements(gl.TRIANGLES,part.indexCount,part.indexType,0)}gl.bindVertexArray(null);
+   for(const part of this.drawables){const m=activeMaterial(part.name,part.material);if(this.mode==='tech'&&focusGroup!=='all'){let match=focusGroup==='upper'?/upper|knit|lace|tongue|liner|stitch|perf/i.test(part.name):focusGroup==='cushion'?/midsole|air_unit|foam|silver/i.test(part.name):/outsole|tread/i.test(part.name);if(!match){m.base=m.base.map(x=>x*.17);m.emissive=[0,0,0]}else{m.emissive=m.emissive.map(x=>x*2.0)}}gl.uniform3fv(U.uBase,m.base);gl.uniform3fv(U.uEmissive,m.emissive);un1('uMetal',m.metallic);un1('uRough',m.rough);un1('uKnit',part.name==='Upper_Knit'?1:0);gl.uniform3fv(U.uPartOffset,part.offset);gl.bindVertexArray(part.vao);gl.drawElements(gl.TRIANGLES,part.indexCount,part.indexType,0)}gl.bindVertexArray(null);
    if(!reduced||Math.abs(this.ty-this.yaw)+Math.abs(this.explodeTarget-this.explode)>.002)this.schedule();
  }
  reset(){this.ty=this.mode==='tech'?.22:.48;this.tp=-.15;this.tz=0;this.explodeTarget=0;this.schedule()}
@@ -114,14 +114,17 @@ class Viewer{
 async function create(canvas,mode){if(!canvas)return;let view=new Viewer(canvas,mode);all.set(mode,view);try{await view.init()}catch(err){console.warn('STRYDE high-detail GLB unavailable; keeping image fallback:',err.message);view.dead=true;view.io.disconnect();all.delete(mode);if(mode==='overlay')window.Stryde3DFallback?.start(canvas,style.accent)}return view}
 function setStyle(options){Object.keys(style).forEach(k=>{if(options[k]!==undefined)style[k]=options[k]});for(const view of all.values())view.schedule()}
 function reset(mode){all.get(mode)?.reset()}
-function setExplode(value){let v=all.get('tech');if(v){v.explodeTarget=value?1:0;v.schedule()}}
+function setExplode(value){manualTech=true;let v=all.get('tech');if(v){v.explodeTarget=typeof value==='number'?clamp(value,0,1):(value?1:0);v.schedule()}}
+function setTechFocus(part){focusGroup=['all','upper','cushion','traction'].includes(part)?part:'all';all.get('tech')?.schedule()}
+function resetTechScroll(){manualTech=false;all.get('tech')?.schedule()}
+function showroomPreset(which){const v=all.get('showroom');if(!v)return;const preset={hero:[.65,-.19,0],front:[1.62,-.13,.35],top:[.4,-1.0,1.05],heel:[3.25,-.13,.5]}[which]||[.65,-.19,0];v.ty=preset[0];v.tp=preset[1];v.tz=preset[2];v.schedule()}
 function applyScroll(){if(reduced)return;const hero=all.get('hero');if(hero){const p=clamp(scrollY/Math.max(innerHeight*.95,1),0,1);if(!hero.pointerDown){hero.ty=.48-p*.67;hero.tp=-.16+p*.13;hero.tz=p*.95;hero.schedule()}}
- const tech=all.get('tech'),node=document.querySelector('#technology');if(tech&&node){const rect=node.getBoundingClientRect(),p=clamp((innerHeight-rect.top)/(innerHeight+rect.height*.6),0,1);if(!tech.pointerDown){tech.ty=.20+p*.34;tech.tp=-.15+p*.16}if(!document.querySelector('#tech-visual')?.classList.contains('exploded'))tech.explodeTarget=Math.sin(Math.PI*p)*.62;tech.schedule()}}
+ const tech=all.get('tech'),node=document.querySelector('#technology');if(tech&&node){const rect=node.getBoundingClientRect(),p=clamp((innerHeight-rect.top)/(innerHeight+rect.height*.6),0,1);if(!tech.pointerDown){tech.ty=.20+p*.34;tech.tp=-.15+p*.16}if(!manualTech&&!document.querySelector('#tech-visual')?.classList.contains('exploded'))tech.explodeTarget=Math.sin(Math.PI*p)*.82;tech.schedule()}}
 let frame=0;function onScroll(){if(frame)return;frame=requestAnimationFrame(()=>{frame=0;applyScroll()})}
 function scrollSetup(){if(scrollListening)return;scrollListening=true;window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll,{passive:true});if(window.ScrollTrigger&&window.gsap){try{ScrollTrigger.create({trigger:'#technology',start:'top bottom',end:'bottom top',scrub:true,onUpdate:onScroll})}catch{}}setTimeout(applyScroll,180)}
-function init(){create(document.querySelector('#hero-model'), 'hero');create(document.querySelector('#custom-model'),'studio');create(document.querySelector('#tech-model'),'tech');scrollSetup()}
+function init(){create(document.querySelector('#hero-model'), 'hero');create(document.querySelector('#custom-model'),'studio');create(document.querySelector('#tech-model'),'tech');const shoe=document.querySelector('#showroom-model');if(shoe){const io=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){io.disconnect();create(shoe,'showroom')}},{rootMargin:'400px'});io.observe(shoe)}scrollSetup()}
 window.Stryde3DFallback=window.Stryde3D;
-window.StrydeGLB={style,setStyle,reset,setExplode,loaded:()=>!!all.get('studio')?.ready};
+window.StrydeGLB={style,setStyle,reset,setExplode,setTechFocus,resetTechScroll,showroomPreset,loaded:()=>!!all.get('studio')?.ready,showroomLoaded:()=>!!all.get('showroom')?.ready};
 window.Stryde3D={
  start(canvas,color){style.accent=color||style.accent;const old=all.get('overlay');if(old){old.activate();old.schedule();return}create(canvas,'overlay')},
  stop(){all.get('overlay')?.deactivate();window.Stryde3DFallback?.stop()},
