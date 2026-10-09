@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/bootstrap.php';
+if(!configured()){require __DIR__.'/demo.php';demo_route();}
+
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Cache-Control: no-store');

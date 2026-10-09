@@ -52,3 +52,18 @@ Use a 12+ character unique administrator password. Seeded stock is fictitious. N
 - Real shipping carrier integration, automated shipping labels, refunds, transactional email, password reset, email verification, GDPR/privacy/legal policies, rate-limit hardening and production payment compliance are **not** included.
 - Use HTTPS; disable public debug output; do not put private credentials into static JavaScript or commit them to Git.
 - Verify `pdo_mysql` extension and filesystem paths in cPanel's PHP version; not all cPanel hosts expose Git deployment.
+
+## Automatic demo mode (no MySQL or Stripe configuration)
+
+**Default when `~/stryde-private.php` has not been configured:** On the first PHP API request, STRYDE automatically creates the private SQLite database at `~/stryde-demo-private/store.sqlite` (outside `public_html`) and seeds concept sneakers and simulated inventory. Requires PHP `pdo_sqlite` and a writable home directory. This is a **server-backed demo**—accounts and orders persist across browsers, with hashed passwords and secure sessions. Real payment collection remains disabled. Customers can create accounts immediately without administrator action.
+
+To create the administrator securely on your own cPanel Terminal (never add admin passwords to Git or a web URL):
+
+```bash
+cd ~/public_html/STRYDE
+php api/demo-admin.php owner@example.com
+```
+
+The command prompts for a name and a unique 12+ character password. Sign in through **ACCOUNT** and open `/STRYDE/admin/`. Never automatically promote public registrants to admin.
+
+If the website says SQLite support is unavailable, use **cPanel → Select PHP Version → Extensions** to enable `pdo_sqlite` and `sqlite3`, or complete the separate MySQL production setup above. Do not disable password checks or use client-side-only fake authentication as a substitute.

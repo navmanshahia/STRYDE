@@ -3,7 +3,7 @@ declare(strict_types=1);
 require dirname(__DIR__).'/api/bootstrap.php';
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
-try{$me=configured()?user():null;}catch(Throwable $e){$me=null;}
+try{if(!configured()){require_once dirname(__DIR__).'/api/demo.php';session_start_secure();$me=demo_user();}else{$me=user();}}catch(Throwable $e){$me=null;}
 if(!$me||$me['role']!=='admin'){
   http_response_code(403);echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STRYDE • Admin Access</title><style>body{background:#101217;color:#f4f3ed;font:16px system-ui;padding:10vh 9%}a{color:#ff793a}</style><h1>Admin access required</h1><p>Sign in with an administrator account on the STRYDE storefront first.</p><a href="../">Return to STRYDE</a>';exit;
 }
