@@ -1,0 +1,30 @@
+/* STRYDE V3.2.1: resilient visibility and balanced screen layouts */
+.reveal,.reveal.is-visible{opacity:1!important;visibility:visible!important;transform:none!important}
+.product-card,.editorial-card,.option-block,.tech-copy,.tech-visual,.manifesto-inner{visibility:visible}
+.hero{min-height:600px;height:min(730px,calc(100svh - 86px));max-height:770px}
+.tech-section,.technology{min-height:0}.section-pad{padding-top:74px;padding-bottom:74px}
+.showroom-viewport{min-height:500px}.showroom-shell{min-height:0}
+.showroom-fallback{width:90%;max-width:840px;top:14%;left:5%;object-fit:contain;max-height:75%;opacity:1}
+.showroom-viewport.glb-loaded .showroom-fallback{opacity:0}
+.customizer-stage{min-height:480px}
+.custom-preview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.custom-preview img,#custom-image{display:block;width:min(88%,740px)!important;height:auto;max-height:70%;object-fit:contain;transform:rotate(-7deg);opacity:1;filter:drop-shadow(0 22px 38px rgba(0,0,0,.7)) var(--custom-filter,none)}
+.custom-preview.glb-loaded #custom-image{opacity:0}
+.shoe-stage .hero-shoe{object-fit:contain;max-height:90%}
+.showroom-view-controls{visibility:hidden;opacity:0;pointer-events:none}
+.showroom-viewport.glb-loaded .showroom-view-controls{visibility:visible;opacity:1;pointer-events:auto}
+.tech-visual{min-height:420px;background:radial-gradient(ellipse at 50% 56%,#ff68351b,transparent 59%)}
+.tech-visual .exploded-parts img{display:block}
+.lab-stage{background:radial-gradient(ellipse at center,#23313a 0%,#10171e 63%,#0a0c0f 100%)}
+.lab-stage:before{content:'STRYDE / MATERIAL SCIENCE';position:absolute;top:48%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;font-size:11px;letter-spacing:.3em;color:#ffffff18;pointer-events:none}
+.lab-stage canvas{position:relative;z-index:2}
+.model-orbit-tools{position:absolute;z-index:20;left:5%;top:157px;display:flex;gap:8px;align-items:center}
+.model-orbit-tools button{min-width:45px;min-height:42px;border:1px solid #ffffff5c;background:#111a20ed;color:#f5f5f5;cursor:pointer;padding:0 12px;font-size:11px;font-weight:700;letter-spacing:.08em}
+.model-orbit-tools button:hover,.model-orbit-tools button:focus-visible{background:#ff6938;color:#111}
+.model-orbit-tools .model-angle{font-size:10px;color:#c3ccd0;letter-spacing:.08em}
+.model-overlay.design-active .model-orbit-tools{display:none}
+.model-overlay:not(.design-active) .model-orbit-tools{display:flex}
+.build-version{position:fixed;bottom:6px;right:8px;z-index:3;pointer-events:none;font-size:8px;letter-spacing:.1em;color:#e1f2fb63}
+@media(max-width:950px){.hero{height:auto;min-height:630px}.hero-copy{top:12%}.customizer-stage{min-height:430px}.section-pad{padding-top:62px;padding-bottom:62px}}
+@media(max-width:650px){.hero{min-height:600px}.showroom-viewport{min-height:380px}.showroom-fallback{width:100%;left:0;top:22%;max-height:63%}.customizer-stage{min-height:350px}.custom-preview img,#custom-image{width:94%!important;max-height:71%;transform:rotate(-5deg)}.model-orbit-tools{top:137px;left:5%;right:5%;justify-content:center}.model-orbit-tools button{min-width:42px;min-height:42px}.model-orbit-tools .model-angle{font-size:8px}.tech-visual{min-height:330px}.section-pad{padding-top:55px;padding-bottom:55px}}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}

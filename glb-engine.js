@@ -131,6 +131,7 @@ function updateButtons(){document.querySelectorAll('[data-activate-3d]').forEach
 function releaseMode(mode){const view=all.get(mode);if(view){view.dispose();all.delete(mode)}if(lite&&liteActiveMode===mode)liteActiveMode=null;if(lite)updateButtons()}
 function setStyle(options){Object.keys(style).forEach(k=>{if(options[k]!==undefined)style[k]=options[k]});for(const view of all.values())view.schedule()}
 function reset(mode){all.get(mode)?.reset()}
+function orbitOverlay(degrees){const v=all.get('overlay');if(v&&v.ready){v.ty+=degrees*Math.PI/180;v.schedule();return true}return false}
 function setExplode(value){manualTech=true;let v=all.get('tech');if(v){v.explodeTarget=typeof value==='number'?clamp(value,0,1):(value?1:0);v.schedule()}}
 function setTechFocus(part){focusGroup=['all','upper','cushion','traction'].includes(part)?part:'all';all.get('tech')?.schedule()}
 function resetTechScroll(){manualTech=false;all.get('tech')?.schedule()}
@@ -154,7 +155,7 @@ function init(){
  document.querySelectorAll('[data-activate-3d]').forEach(b=>b.hidden=true);
  create(document.querySelector('#hero-model'), 'hero');create(document.querySelector('#custom-model'),'studio');create(document.querySelector('#tech-model'),'tech');const shoe=document.querySelector('#showroom-model');if(shoe){const io=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){io.disconnect();create(shoe,'showroom')}},{rootMargin:'400px'});io.observe(shoe)}scrollSetup()}
 window.Stryde3DFallback=window.Stryde3D;
-window.StrydeGLB={style,setStyle,reset,setExplode,setTechFocus,resetTechScroll,showroomPreset,loaded:()=>!!all.get('studio')?.ready,showroomLoaded:()=>!!all.get('showroom')?.ready};
+window.StrydeGLB={style,setStyle,reset,setExplode,setTechFocus,resetTechScroll,showroomPreset,orbitOverlay,loaded:()=>!!all.get('studio')?.ready,showroomLoaded:()=>!!all.get('showroom')?.ready};
 window.Stryde3D={
  start(canvas,color){style.accent=color||style.accent;const old=all.get('overlay');if(old){old.activate();old.schedule();return}create(canvas,'overlay')},
  stop(){if(lite)releaseMode('overlay');else all.get('overlay')?.deactivate();window.Stryde3DFallback?.stop()},
