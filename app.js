@@ -9,6 +9,7 @@ const PRODUCTS=[
  {id:'nexus',name:'NEXUS',kind:'FUTURE IN EVERY STEP',price:210,tag:'LIMITED SERIES',index:'03',filter:'hue-rotate(164deg) saturate(1.15)',accent:'#69bfff',color:'ARCTIC ICE',badge:'LIFESTYLE'},
  {id:'phantom',name:'PHANTOM',kind:'BUILT AFTER DARK',price:230,tag:'STUDIO EXCLUSIVE',index:'04',filter:'hue-rotate(242deg) saturate(1.3) brightness(.88)',accent:'#a478ff',color:'AFTER DARK',badge:'LIFESTYLE'}
 ];
+window.StrydeCatalog={update(rows){for(const row of rows){const product=PRODUCTS.find(p=>p.id===row.sku);if(product)product.price=Number(row.price_cents)/100;}renderProducts();renderCart();}};
 const COLORS={solar:{name:'SOLAR FLARE',hue:'',accent:'#ff6938',rgb:'255,105,56'},ice:{name:'ARCTIC ICE',hue:'hue-rotate(164deg) saturate(1.13)',accent:'#69caff',rgb:'105,202,255'},volt:{name:'ACID VOLT',hue:'hue-rotate(75deg) saturate(1.5)',accent:'#bfff4a',rgb:'191,255,74'},violet:{name:'AFTER DARK',hue:'hue-rotate(248deg) saturate(1.2)',accent:'#bb79fa',rgb:'187,121,250'}};
 let cart=[];try{const stored=JSON.parse(localStorage.getItem('stryde-cart-v1')||'[]');if(Array.isArray(stored))cart=stored.filter(i=>PRODUCTS.some(p=>p.id===i.id)&&Number.isInteger(i.qty)&&i.qty>0&&i.qty<100)}catch{}
 let saved=[];try{saved=JSON.parse(localStorage.getItem('stryde-faves-v1')||'[]')}catch{}

@@ -1,5 +1,4 @@
 ---
 deployment:
   tasks:
-    - /bin/mkdir -p "$HOME/public_html/STRYDE/"
-    - /bin/cp -R index.html styles.css stability.css app.js stability.js design-view.js experience-v3.js glb-engine.js 3d-viewer.js README.md assets images models "$HOME/public_html/STRYDE/"
+    - /bin/bash deploy/cpanel-deploy.sh
