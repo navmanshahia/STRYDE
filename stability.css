@@ -28,3 +28,45 @@
 @media(max-width:950px){.hero{height:auto;min-height:630px}.hero-copy{top:12%}.customizer-stage{min-height:430px}.section-pad{padding-top:62px;padding-bottom:62px}}
 @media(max-width:650px){.hero{min-height:600px}.showroom-viewport{min-height:380px}.showroom-fallback{width:100%;left:0;top:22%;max-height:63%}.customizer-stage{min-height:350px}.custom-preview img,#custom-image{width:94%!important;max-height:71%;transform:rotate(-5deg)}.model-orbit-tools{top:137px;left:5%;right:5%;justify-content:center}.model-orbit-tools button{min-width:42px;min-height:42px}.model-orbit-tools .model-angle{font-size:8px}.tech-visual{min-height:330px}.section-pad{padding-top:55px;padding-bottom:55px}}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}
+
+/* STRYDE 3.2.2: hero actions live in normal flow, so they never intersect. */
+.hero .hero-copy{top:13%;width:min(50%,680px)}
+.hero .hero-copy .hero-cta{gap:clamp(12px,2.1vw,30px);flex-wrap:wrap;row-gap:12px}
+.hero .hero-copy .physics-controls{
+ position:static!important;inset:auto!important;display:flex;align-items:center;flex-wrap:wrap;
+ gap:8px 16px;margin-top:20px;max-width:100%;width:fit-content;min-height:34px;
+ z-index:auto;pointer-events:auto
+}
+.hero .hero-copy .physics-controls span{font-size:9px;line-height:1.5;max-width:270px}
+.hero .hero-bottom{pointer-events:none}
+.hero .hero-bottom .scroll-cue{pointer-events:auto}
+@media(max-width:1200px){
+ .hero .hero-copy{top:12%;width:56%}
+ .hero .hero-copy .physics-controls span{display:none}
+}
+@media(max-width:950px){
+ .hero .hero-copy{top:10%;width:min(86%,600px)}
+ .hero .hero-copy .physics-controls{margin-top:15px}
+}
+@media(max-width:650px){
+ .hero .hero-copy{top:9%;width:90%}
+ .hero .hero-copy .hero-cta{margin-top:21px;gap:10px 16px}
+ .hero .hero-copy .physics-controls{margin-top:14px;min-height:30px;background:rgba(9,13,17,.38);width:max-content}
+ .hero .hero-copy .physics-controls button{padding:9px 10px}
+ .hero{height:760px;min-height:760px;max-height:none}
+ .hero .shoe-stage{top:56%;height:31%;left:0;right:0}
+ .hero .shoe-scene img{width:95%;transform:rotate(-10deg) scale(1)}
+ .hero .hero-spec{display:none}
+ .hero .hero-bottom{bottom:21px}
+}
+@media(min-width:951px) and (max-height:760px){
+ .hero .hero-copy{top:10%}
+ .hero h1{margin-top:20px;margin-bottom:21px;font-size:clamp(68px,8.4vw,132px)}
+ .hero .hero-copy .hero-cta{margin-top:23px}
+ .hero .hero-copy .physics-controls{margin-top:12px}
+}
+@media(max-width:360px){
+ html,body{max-width:100%;overflow-x:clip}
+ .tech-copy h2{font-size:clamp(46px,13vw,65px);white-space:normal;overflow-wrap:anywhere}
+ .tech-visual,.tech-grid,.tech-section{max-width:100%;overflow:hidden}
+}

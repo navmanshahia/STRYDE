@@ -17,16 +17,16 @@
   window.STRYDE_LOW_POWER=Boolean(ios||touch||matchMedia('(max-width:900px)').matches||(navigator.deviceMemory&&navigator.deviceMemory<=4));
   if(window.STRYDE_LOW_POWER)document.documentElement.classList.add('performance-lite');})();
   </script>
-  <link rel="stylesheet" href="styles.css?v=3.2.1"/>
-  <link rel="stylesheet" href="stability.css?v=3.2.1"/>
+  <link rel="stylesheet" href="styles.css?v=3.2.2"/>
+  <link rel="stylesheet" href="stability.css?v=3.2.2"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js" defer></script>
-  <script src="3d-viewer.js?v=3.2.1" defer></script>
-  <script src="glb-engine.js?v=3.2.1" defer></script>
-  <script src="app.js?v=3.2.1" defer></script>
-  <script src="experience-v3.js?v=3.2.1" defer></script>
-  <script src="design-view.js?v=3.2.1" defer></script>
-  <script src="stability.js?v=3.2.1" defer></script>
+  <script src="3d-viewer.js?v=3.2.2" defer></script>
+  <script src="glb-engine.js?v=3.2.2" defer></script>
+  <script src="app.js?v=3.2.2" defer></script>
+  <script src="experience-v3.js?v=3.2.2" defer></script>
+  <script src="design-view.js?v=3.2.2" defer></script>
+  <script src="stability.js?v=3.2.2" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -55,6 +55,7 @@
         <h1 id="hero-title">MOVE<br/><em>BEYOND<span class="period">.</span></em></h1>
         <p class="hero-sub">Not made to follow. Engineered to redefine what moves us forward.</p>
         <div class="hero-cta"><a class="btn btn-light magnetic" href="#showroom">ENTER THE SHOWROOM <span class="btn-arrow">↗</span></a><button class="text-cta" id="open-film"><span class="play-ring">▶</span> EXPERIENCE THE FILM <span class="watch-duration">00:15</span></button></div>
+        <div class="physics-controls"><button id="physics-toggle" type="button" aria-pressed="true">◉ LIVE PARTICLE PHYSICS</button><span>MOVE YOUR CURSOR TO DISTURB THE FIELD</span></div>
       </div>
       <div class="shoe-stage" id="shoe-stage" aria-label="Floating STRYDE Aerodyne One sneaker visual">
         <span class="shoe-aura"></span>
@@ -62,7 +63,7 @@
         <span class="hotspot hotspot-a" aria-hidden="true">+</span><span class="hotspot hotspot-b" aria-hidden="true">+</span>
         <span class="stage-cross cross-one">+</span><span class="stage-cross cross-two">+</span>
       </div>
-      <div class="physics-controls"><button id="physics-toggle" type="button" aria-pressed="true">◉ LIVE PARTICLE PHYSICS</button><span>MOVE YOUR CURSOR TO DISTURB THE FIELD</span></div>
+      
       <div class="hero-spec"><div class="spec-line"></div><span>INTRODUCING</span><strong>AERODYNE ONE</strong><p>ENGINEERED FOR THE IMPOSSIBLE.</p><div class="hero-spec-footer"><span>01 / 04</span><span class="spec-led">●</span></div></div>
       <div class="hero-bottom"><div class="hero-bottom-left"><span class="little-ticks"><i></i><i></i><i></i><i></i></span> DESIGNED TO DISRUPT</div><div class="hero-bottom-mid"><span class="orange-dot"></span> A NEW ERA OF MOVEMENT</div><a href="#collection" class="scroll-cue">SCROLL TO DISCOVER <span>↓</span></a></div>
       <div class="hero-serial" aria-hidden="true">[ STRYDE / SS-026 / UNIT 001 ]</div>

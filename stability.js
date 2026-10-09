@@ -1,4 +1,4 @@
-/* STRYDE 3.2.1 - critical-content and 360 prototype controls */
+/* STRYDE 3.2.2 - critical-content and 360 prototype controls */
 (()=>{'use strict';
 const $=s=>document.querySelector(s);
 document.querySelectorAll('[data-counter]').forEach(el=>{el.textContent=el.dataset.counter||el.textContent});
@@ -27,5 +27,5 @@ if(modal&&switcher){
 for(const [key,title] of [['showroom','Load 3D concept model for genuine 360 degree rotation; differs from product artwork'],['studio','Activate 3D concept model to rotate 360 degrees. Product art remains default']]){
  const el=$('[data-activate-3d="'+key+'"]');if(el)el.title=title
 }
-const version=document.createElement('span');version.className='build-version';version.textContent='STRYDE 3.2.1';document.body.appendChild(version);
+const version=document.createElement('span');version.className='build-version';version.textContent='STRYDE 3.2.2';document.body.appendChild(version);
 })();
